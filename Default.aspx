@@ -1,12 +1,13 @@
-﻿<%@ Page Title="Strona główna" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="VotingApp._Default" %>
+﻿<%@ Page Title="Strona główna" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" ValidateRequest="false" Inherits="VotingApp._Default" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
-    <div class="container">
     <div class="jumbotron">
         <h2>Dodaj opinię</h2>
         <p class="lead">Napisz poniżej swoją opinię o zajęciach na UP</p>
+        <asp:Label runat="server" ID="NotLoggedIn" CssClass="col-md-10 control-label">Zaloguj się, aby dodać opinię</asp:Label>
         <div class="container-fluid">   
-            <asp:TextBox ID="TextBox1" runat="server" TextMode="MultiLine" CssClass="form-control" style="resize:none" Rows="10"></asp:TextBox>
+            <asp:TextBox ID="Opinion" runat="server" TextMode="MultiLine" CssClass="form-control" style="resize:none" Rows="10" Visible="false"></asp:TextBox>
+            <asp:Button ID="SubmitButton" runat="server" Text="Prześlij opinię" CssClass="btn btn-default" OnClick="SubmitClick" Visible="false" />
         </div>
     </div>
     
