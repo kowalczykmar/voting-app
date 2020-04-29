@@ -34,7 +34,7 @@ namespace VotingApp
             String email = EmailTxt.Text.Trim();
             String pass = PasswordTxt.Text.Trim();
             String domain = email.Substring(email.IndexOf("@") + 1);
-            email = email.Remove(email.IndexOf("@"), domain.Length + 1);
+            email = email.Remove(email.IndexOf("@"));//, domain.Length + 1);
             if (EmailCheck(email))
             {
                 if (PassCheck(email, Encrypt(pass)))
@@ -128,23 +128,37 @@ namespace VotingApp
 
             //var encryptedData = Encrypt(data, publicKey);
             //var decryptedData = Decrypt(encryptedData, privateKey);
-            var rsa = RSA.Create(2048);
-            var privateKey = rsa.ToXmlString(true);
+            //var rsa = RSA.Create();
+            //var privateKey = rsa.ToXmlString(true);
             //var publicKey = rsa.ExportParameters(false);
             //var publicKey = rsa.ToXmlString(false);
             //StringWriter sw = new StringWriter();
             //XmlTextWriter xw = new XmlTextWriter(sw);
             //privateKey.WriteTo(xw);
             //string xml = sw.ToString();
+            username = username.Trim();
+            username = username.Replace(".", "+");
+            //username = username.Replace(" ", "+");
+            username += "+end";
+            int mod4 = username.Length % 4;
+            if (mod4 > 0)
+            {
+                username += new string('=', 4 - mod4);
+            }
+
+            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+            var privatekey = rsa.ToXmlString(true);
 
             String user = ReadCookie();
             if (user == "1")
             {
                 HttpCookie userInfo = new HttpCookie("userInfo");
-                byte[] data = Encoding.Unicode.GetBytes(username);
-                userInfo["UserName"] = Encoding.Unicode.GetString(rsa.Encrypt(data, RSAEncryptionPadding.OaepSHA256));
-                userInfo["PrivateKey"] = privateKey;
+                byte[] data = Convert.FromBase64String(username);
+                //userInfo["UserName"] = Encoding.Unicode.GetString(rsa.Encrypt(data, RSAEncryptionPadding.OaepSHA256));
+                //userInfo["PrivateKey"] = privateKey;
                 //userInfo.Expires = DateTime.MinValue;
+                userInfo["UserName"] = Convert.ToBase64String(rsa.Encrypt(data, true));
+                userInfo["PrivateKey"] = privatekey;
                 Response.Cookies.Add(userInfo);
             }
         }
