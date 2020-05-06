@@ -4,10 +4,37 @@
     <div class="jumbotron">
         <h2>Dodaj opinię</h2>
         <p class="lead">Napisz poniżej swoją opinię o zajęciach na UP</p>
-        <asp:Label runat="server" ID="NotLoggedIn" CssClass="col-md-10 control-label">Zaloguj się, aby dodać opinię</asp:Label>
+        <asp:Label runat="server" ID="NotLoggedIn1" CssClass="col-md-10 control-label">Zaloguj się, aby dodać opinię</asp:Label>
         <div class="container-fluid">   
-            <asp:TextBox ID="Opinion" runat="server" TextMode="MultiLine" CssClass="form-control" style="resize:none" Rows="10" Visible="false"></asp:TextBox>
-            <asp:Button ID="SubmitButton" runat="server" Text="Prześlij opinię" CssClass="btn btn-default" OnClick="SubmitClick" Visible="false" />
+            <asp:TextBox ID="Opinion1" runat="server" TextMode="MultiLine" CssClass="form-control" style="resize:none" Rows="10" Visible="false"></asp:TextBox>
+            <asp:RequiredFieldValidator id="OpinionValidator1" runat="server" ControlToValidate="Opinion1" ErrorMessage="Pole obowiązkowe" ForeColor="Red"></asp:RequiredFieldValidator>
+            <asp:Button ID="SubmitButton1" runat="server" Text="Prześlij opinię" CssClass="btn btn-default" OnClick="Submit1Click" Visible="false" />
+            <asp:TextBox ID="Code1" runat="server" CssClass="form-control" style="resize:none" Visible="false"></asp:TextBox>
+            <asp:Button ID="CheckOpinionBtn1" runat="server" Text="Sprawdź" CssClass="btn btn-default" OnClick="CheckClick1" Visible="false" />
+        </div>
+    </div>
+    <div class="jumbotron">
+        <h2>Dodaj opinię</h2>
+        <p class="lead">Napisz poniżej swoją opinię o zajęciach na UP</p>
+        <asp:Label runat="server" ID="NotLoggedIn2" CssClass="col-md-10 control-label">Zaloguj się, aby dodać opinię</asp:Label>
+        <div class="container-fluid">   
+            <asp:TextBox ID="Opinion2" runat="server" TextMode="MultiLine" CssClass="form-control" style="resize:none" Rows="10" Visible="false"></asp:TextBox>
+            <asp:RequiredFieldValidator id="OpinionValidator2" runat="server" ControlToValidate="Opinion2" ErrorMessage="Pole obowiązkowe" ForeColor="Red"></asp:RequiredFieldValidator>
+            <asp:Button ID="SubmitButton2" runat="server" Text="Prześlij opinię" CssClass="btn btn-default" OnClick="Submit2Click" Visible="false" />
+            <asp:TextBox ID="Code2" runat="server" CssClass="form-control" style="resize:none" Visible="false"></asp:TextBox>
+            <asp:Button ID="CheckOpinionBtn2" runat="server" Text="Sprawdź" CssClass="btn btn-default" OnClick="CheckClick2" Visible="false" />
+        </div>
+    </div>
+    <div class="jumbotron">
+        <h2>Dodaj opinię</h2>
+        <p class="lead">Napisz poniżej swoją opinię o zajęciach na UP</p>
+        <asp:Label runat="server" ID="NotLoggedIn3" CssClass="col-md-10 control-label">Zaloguj się, aby dodać opinię</asp:Label>
+        <div class="container-fluid">   
+            <asp:TextBox ID="Opinion3" runat="server" TextMode="MultiLine" CssClass="form-control" style="resize:none" Rows="10" Visible="false"></asp:TextBox>
+            <asp:RequiredFieldValidator id="OpinionValidator3" runat="server" ControlToValidate="Opinion3" ErrorMessage="Pole obowiązkowe" ForeColor="Red"></asp:RequiredFieldValidator>
+            <asp:Button ID="SubmitButton3" runat="server" Text="Prześlij opinię" CssClass="btn btn-default" OnClick="Submit3Click" Visible="false" />
+            <asp:TextBox ID="Code3" runat="server" CssClass="form-control" style="resize:none" Visible="false"></asp:TextBox>
+            <asp:Button ID="CheckOpinionBtn3" runat="server" Text="Sprawdź" CssClass="btn btn-default" OnClick="CheckClick3" Visible="false" />
         </div>
     </div>
     

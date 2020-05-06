@@ -17,7 +17,19 @@ namespace VotingApp
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
+            String user = ReadCookie();
+            if (user != "1")
+            {
+                ErrorMessage.Visible = false;
+                EmailLabel.Visible = false;
+                EmailTxt.Visible = false;
+                PasswordLabel.Visible = false;
+                PasswordTxt.Visible = false;
+                ConfirmPasswordLabel.Visible = false;
+                ConfirmPasswordTxt.Visible = false;
+                RegisterButton.Visible = false;
+                LoggedInText.Visible = true;
+            }
         }
 
         protected void RegisterClick(object sender, EventArgs e)
@@ -27,34 +39,48 @@ namespace VotingApp
             String pass = PasswordTxt.Text.Trim();
             String passconf = ConfirmPasswordTxt.Text.Trim();
             String domain = email.Substring(email.IndexOf("@") + 1);
-            if(domain == "student.up.krakow.pl")
+            if (domain == "student.up.krakow.pl")
             {
-                //walidacja czy mail juz istnieje w bazie
-                if(pass == passconf)
+                email = email.Remove(email.IndexOf("@"), domain.Length + 1);
+                if (EmailCheck(email))
                 {
-                    ErrorMessage.Visible = false;
-                    InsertRecord(EmailTxt.Text.Trim(), PasswordTxt.Text.Trim());
-                    EmailLabel.Visible = false;
-                    EmailTxt.Visible = false;
-                    PasswordLabel.Visible = false;
-                    PasswordTxt.Visible = false;
-                    ConfirmPasswordLabel.Visible = false;
-                    ConfirmPasswordTxt.Visible = false;
-                    RegisterButton.Visible = false;
-                    SuccesLabel.Visible = true;
 
+                    if (pass == passconf)
+                    {
+                        if (ValidatePassword(pass))
+                        {
+                            InsertRecord(email, pass);
+                            /*
+                            ErrorMessage.Visible = false;
+                            EmailLabel.Visible = false;
+                            EmailTxt.Visible = false;
+                            PasswordLabel.Visible = false;
+                            PasswordTxt.Visible = false;
+                            ConfirmPasswordLabel.Visible = false;
+                            ConfirmPasswordTxt.Visible = false;
+                            RegisterButton.Visible = false;
+                            */
+                            Response.Write("<script language='javascript'>window.alert('Rejestracja się powiodła, zaloguj się');window.location='LoginAccount.aspx';</script>");
+                        }
+                        else
+                        {
+                            ErrorMessage.Text = "Hasło jest nieprawidłowe, musi zawierać co najmniej 8 znaków, jedną wielką literę, jedną cyfrę i jeden znak specjalny";
+                        }
+                    }
+                    else
+                    {
+                        ErrorMessage.Text = "Powtórzone hasło jest nieprawidłowe";
+                    }
                 }
                 else
                 {
-                    ErrorMessage.Text = "Powtórzone hasło jest nieprawidłowe";
+                    ErrorMessage.Text = "Adres e-mail jest już zarejestrowany. Przejdź do strony logowania, aby się zalogować";
                 }
             }
             else
             {
                 ErrorMessage.Text = "Adres e-mail nie pochodzi z domeny student.up.krakow.pl";
             }
-            //InsertRecord(EmailTxt.Text.Trim(), PasswordTxt.Text.Trim());
-
         }
 
         private void InsertRecord(string email, string password)
@@ -65,9 +91,9 @@ namespace VotingApp
                 string sql = "INSERT INTO Users(Username,Password) VALUES (@Email,@Pass)";
                 using (SqlCommand cmd = new SqlCommand(sql, connection))
                 {
-                    //zapisanie zaszyfrowanych emailu i hasla w bazie
+                    //zapisanie loginu i zaszyfrowanego hasla w bazie
                     connection.Open();
-                    cmd.Parameters.AddWithValue("@Email", Encrypt(email));
+                    cmd.Parameters.AddWithValue("@Email", email);
                     cmd.Parameters.AddWithValue("@Pass", Encrypt(password));
                     cmd.ExecuteNonQuery();
                 }
@@ -116,6 +142,67 @@ namespace VotingApp
                 }
             }
             return cipherText;
+        }
+
+        private Boolean ValidatePassword(string password)
+        {
+            if (password.Length>=8){
+                if (password.Any(char.IsUpper))
+                {
+                    if (password.Any(char.IsDigit))
+                    {
+                        if (password.Any(p => !char.IsLetterOrDigit(p))){
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private Boolean EmailCheck(string email)
+        {
+            Boolean check = true;
+            string dbConnectionString = ConfigurationManager.ConnectionStrings["Baza DanychConnectionString"].ConnectionString;
+            SqlConnection con = new SqlConnection(dbConnectionString);
+            SqlCommand cmd = new SqlCommand("Select * from Users where Username = @Email", con);
+            cmd.Parameters.AddWithValue("@Email", email);
+            con.Open();
+            SqlDataReader dr = cmd.ExecuteReader();
+            while (dr.Read())
+            {
+                if (dr.HasRows == true)
+                {
+                    check = false;
+                }
+            }
+            return check;
+        }
+
+        private String ReadCookie()
+        {
+            string User_name = "1";
+            HttpCookie reqCookies = Request.Cookies["userInfo"];
+            if (reqCookies != null)
+            {
+                User_name = reqCookies["UserName"].ToString();
+            }
+            return User_name;
         }
     }
 }
