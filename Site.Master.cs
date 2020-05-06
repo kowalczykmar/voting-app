@@ -70,11 +70,56 @@ namespace VotingApp
         protected void Page_Load(object sender, EventArgs e)
         {
 
+            String user = ReadCookie();
+            if (user != "1")
+            {
+                //RegisterLabel.Text = "Witaj";
+                LoginButton.Text = "Wyloguj się";
+                RegisterButton.Visible = false;
+            }
         }
 
         protected void Unnamed_LoggingOut(object sender, LoginCancelEventArgs e)
         {
             Context.GetOwinContext().Authentication.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+        }
+
+        private String ReadCookie()
+        {
+            string User_name = "1";
+            HttpCookie reqCookies = Request.Cookies["userInfo"];
+            if (reqCookies != null)
+            {
+                User_name = reqCookies["UserName"].ToString();
+            }
+            return User_name;
+        }
+
+        protected void LoginClick(object sender, EventArgs e)
+        {
+            String user = ReadCookie();
+            if (user != "1")
+            {
+                HttpCookie userInfo = new HttpCookie("userInfo");
+                userInfo["UserName"] = 1.ToString();
+                Response.Cookies.Add(userInfo);
+                LoginButton.Text = ReadCookie();
+                Response.Redirect("Default.aspx");
+                RegisterButton.Visible = true;
+            }
+            else
+            {
+                Response.Redirect("LoginAccount.aspx");
+            }
+        }
+
+        protected void RegisterClick(object sender, EventArgs e)
+        {
+            String user = ReadCookie();
+            if (user == "1")
+            {
+                Response.Redirect("RegisterAccount.aspx");
+            }
         }
     }
 
