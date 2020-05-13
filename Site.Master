@@ -52,24 +52,30 @@
                     <ul class="nav navbar-nav">
                         <li><a runat="server" href="~/">Strona główna</a></li>
                         <li><a runat="server" href="~/About">Informacje</a></li>
-                        <li><a runat="server" href="~/Contact">Kontakt</a></li>
                     </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><asp:Button ID="TeacherButton" runat="server" Text="Panel dla prowadzących" CssClass="btn btn-primary" causesvalidation="false" OnClick="TeacherClick" /></li>
+                        <li><asp:Button ID="RegisterButton" runat="server" Text="Zarejestruj się" CssClass="btn btn-primary" causesvalidation="false" OnClick="RegisterClick" /></li>
+                        <li><asp:Button ID="LoginButton" runat="server" Text="Zaloguj się" CssClass="btn btn-primary" causesvalidation="false" OnClick="LoginClick" /></li>
+                    </ul>
+                    <!--
                     <asp:LoginView runat="server" ViewStateMode="Disabled">
                         <AnonymousTemplate>
                             <ul class="nav navbar-nav navbar-right">
-                                <li><a runat="server" href="~/Account/Register">Zarejestruj się</a></li>
-                                <li><a runat="server" href="~/Account/Login">Zaloguj</a></li>
+                                <li><a runat="server" href="~/RegisterAccount">Zarejestruj się</a></li>
+                                <li><a runat="server" href="~/LoginAccount">Zaloguj się</a></li>
                             </ul>
                         </AnonymousTemplate>
                         <LoggedInTemplate>
                             <ul class="nav navbar-nav navbar-right">
-                                <li><a runat="server" href="~/Account/Manage" title="Manage your account">Hello, <%: Context.User.Identity.GetUserName()  %> !</a></li>
+                                <li><a runat="server" href="~/Account/Manage" title="Manage your account">Hello,-------  !</a></li>
                                 <li>
                                     <asp:LoginStatus runat="server" LogoutAction="Redirect" LogoutText="Log off" LogoutPageUrl="~/" OnLoggingOut="Unnamed_LoggingOut" />
                                 </li>
                             </ul>
                         </LoggedInTemplate>
                     </asp:LoginView>
+                    -->
                 </div>
             </div>
         </div>
@@ -78,7 +84,7 @@
             </asp:ContentPlaceHolder>
             <hr />
             <footer>
-                <p>&copy; <%: DateTime.Now.Year %> - Moja aplikacja platformy ASP.NET</p>
+                <p>&copy; <%: DateTime.Now.Year %> - Opinie o UP</p>
             </footer>
         </div>
     </form>

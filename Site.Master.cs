@@ -71,7 +71,7 @@ namespace VotingApp
         {
 
             String user = ReadCookie();
-            if (user != "1")
+            if (user != "1" || Session["TeacherLoggedIn"] != null)
             {
                 //RegisterLabel.Text = "Witaj";
                 LoginButton.Text = "Wyloguj się";
@@ -107,6 +107,11 @@ namespace VotingApp
                 Response.Redirect("Default.aspx");
                 RegisterButton.Visible = true;
             }
+            else if (Session["TeacherLoggedIn"] != null)
+            {
+                Session.Remove("TeacherLoggedIn");
+                Response.Redirect("Default.aspx");
+            }
             else
             {
                 Response.Redirect("LoginAccount.aspx");
@@ -119,6 +124,18 @@ namespace VotingApp
             if (user == "1")
             {
                 Response.Redirect("RegisterAccount.aspx");
+            }
+        }
+
+        protected void TeacherClick(object sender, EventArgs e)
+        {
+            if (Session["TeacherLoggedIn"] != null)
+            {
+                Response.Redirect("TeacherDefault.aspx");
+            }
+            else
+            {
+                Response.Redirect("TeacherLogin.aspx");
             }
         }
     }
