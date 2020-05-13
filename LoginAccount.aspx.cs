@@ -41,6 +41,9 @@ namespace VotingApp
                 {
                     Response.Write("<script language='javascript'>window.alert('Logowanie udało się :) Wróć na stronę główną');window.location='Default.aspx';</script>");
                     SetCookie(email);
+                    Session["Year"] = GetYear(email);
+                    Session["GroupID"] = GetGroupID(email);
+                    GetTeachers(email);
                 }
                 else
                 {
@@ -172,6 +175,59 @@ namespace VotingApp
                 User_name = reqCookies["UserName"].ToString();
             }
             return User_name;
+        }
+
+        private int GetYear(string email)
+        {
+            int year = 0;
+            string dbConnectionString = ConfigurationManager.ConnectionStrings["Baza DanychConnectionString"].ConnectionString;
+            SqlConnection con = new SqlConnection(dbConnectionString);
+            SqlCommand cmd = new SqlCommand("Select Year from Users where Username = @Email", con);
+            cmd.Parameters.AddWithValue("@Email", email);
+            con.Open();
+            SqlDataReader dr = cmd.ExecuteReader();
+            if (dr.Read())
+            {
+                year = dr.GetInt32(0);
+            }
+            return year;
+        }
+
+        private String GetGroupID(string email)
+        {
+            string group = "";
+            string dbConnectionString = ConfigurationManager.ConnectionStrings["Baza DanychConnectionString"].ConnectionString;
+            SqlConnection con = new SqlConnection(dbConnectionString);
+            SqlCommand cmd = new SqlCommand("Select GroupID from Users where Username = @Email", con);
+            cmd.Parameters.AddWithValue("@Email", email);
+            con.Open();
+            SqlDataReader dr = cmd.ExecuteReader();
+            if (dr.Read())
+            {
+                group = dr.GetString(0);
+            }
+            return group;
+        }
+
+        private void GetTeachers(string email)
+        {
+            //string teacher1 = "";
+            string dbConnectionString = ConfigurationManager.ConnectionStrings["Baza DanychConnectionString"].ConnectionString;
+            SqlConnection con = new SqlConnection(dbConnectionString);
+            SqlCommand cmd = new SqlCommand("Select Teacher from Subjects where Year = @Year and Groups = @GroupID", con);
+            cmd.Parameters.AddWithValue("@Year", GetYear(email));
+            cmd.Parameters.AddWithValue("@GroupID", GetGroupID(email));
+            con.Open();
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+            String t1 = dt.Rows[0][0].ToString();
+            String t2 = dt.Rows[1][0].ToString();
+            String t3 = dt.Rows[2][0].ToString();
+
+            Session["Teacher1"] = t1;
+            Session["Teacher2"] = t2;
+            Session["Teacher3"] = t3;
         }
 
         /*static void Main(string[] args)
