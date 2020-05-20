@@ -17,15 +17,23 @@ namespace VotingApp
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            String text = File.ReadAllText(@"C:\Users\Jan Kremer\source\repos\test\test.txt");
+            //Teacher1.Text = Teacher1.Text + text;
+
+            if (Session["TeacherLoggedIn"] != null)
+            {
+                Response.Redirect("TeacherDefault.aspx");
+            }
             String user = ReadCookie();
-            if (user != "1")
+            if (user != "1" && Session["LoggedIn"] != null)
             {
                 GetSubjects();
                 if (!UserOpinionCheck(1))
                 {
                     Subject1.Text = "Przedmiot: " + Session["Subject1"];
                     Subject1.Visible = true;
-                    Teacher1.Text = "Prowadzący: " + Session["Teacher1"];
+                    //Teacher1.Text = "Prowadzący: " + Session["Teacher1"];
+                    Teacher1.Text = Teacher1.Text + text;
                     Teacher1.Visible = true;
                     Opinion1.Visible = true;
                     NotLoggedIn1.Visible = false;
@@ -40,6 +48,8 @@ namespace VotingApp
                     NotLoggedIn1.Text = "Opinia została już przesłana. Dziękujemy! Wpisz poniżej swój kod, aby sprawdzić, czy opinia została prawidłowo zapisana.";
                     Code1.Visible = true;
                     CheckOpinionBtn1.Visible = true;
+                    RequiredFieldValidator1.Enabled = false;
+                    OpinionValidator1.Enabled = false;
                 }
                 if (!UserOpinionCheck(2))
                 {
@@ -60,6 +70,8 @@ namespace VotingApp
                     NotLoggedIn2.Text = "Opinia została już przesłana. Dziękujemy! Wpisz poniżej swój kod, aby sprawdzić, czy opinia została prawidłowo zapisana.";
                     Code2.Visible = true;
                     CheckOpinionBtn2.Visible = true;
+                    RequiredFieldValidator2.Enabled = false;
+                    OpinionValidator2.Enabled = false;
                 }
                 if (!UserOpinionCheck(3))
                 {
@@ -80,6 +92,8 @@ namespace VotingApp
                     NotLoggedIn3.Text = "Opinia została już przesłana. Dziękujemy! Wpisz poniżej swój kod, aby sprawdzić, czy opinia została prawidłowo zapisana.";
                     Code3.Visible = true;
                     CheckOpinionBtn3.Visible = true;
+                    RequiredFieldValidator3.Enabled = false;
+                    OpinionValidator3.Enabled = false;
                 }
             }
         }
@@ -102,16 +116,10 @@ namespace VotingApp
             HttpCookie reqCookies = Request.Cookies["userInfo"];
             if (reqCookies != null)
             {
-                //String User_name = reqCookies["UserName"].ToString();
                 byte[] User_name = Convert.FromBase64String(reqCookies["UserName"]);
                 User_key = reqCookies["PrivateKey"];
                 RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
                 rsa.FromXmlString(User_key);
-                //byte[] user = rsa.Decrypt(Encoding.Unicode.GetBytes(User_name), RSAEncryptionPadding.OaepSHA256);
-                //User_key = Encoding.Unicode.GetString(user);
-                //var rsa = RSA.Create();
-                //rsa.FromXmlString(User_key);
-                //byte[] user = rsa.Decrypt(Convert.FromBase64String(User_name), true);
                 byte[] user = rsa.Decrypt(User_name, true);
                 User_key = Convert.ToBase64String(user);
                 User_key = User_key.ToString();
@@ -134,6 +142,10 @@ namespace VotingApp
             CheckboxText1.Visible = false;
             CheckboxList1.Visible = false;
             SubmitButton1.Visible = false;
+            RequiredFieldValidator1.Enabled = false;
+            OpinionValidator1.Enabled = false;
+            ShuffleOpinionsTable();
+            ShuffleUsersWithOpinionsTable();
         }
 
         protected void Submit2Click(object sender, EventArgs e)
@@ -149,6 +161,10 @@ namespace VotingApp
             CheckboxText2.Visible = false;
             CheckboxList2.Visible = false;
             SubmitButton2.Visible = false;
+            RequiredFieldValidator2.Enabled = false;
+            OpinionValidator2.Enabled = false;
+            ShuffleOpinionsTable();
+            ShuffleUsersWithOpinionsTable();
         }
 
         protected void Submit3Click(object sender, EventArgs e)
@@ -164,6 +180,10 @@ namespace VotingApp
             CheckboxText3.Visible = false;
             CheckboxList3.Visible = false;
             SubmitButton3.Visible = false;
+            RequiredFieldValidator3.Enabled = false;
+            OpinionValidator3.Enabled = false;
+            ShuffleOpinionsTable();
+            ShuffleUsersWithOpinionsTable();
         }
 
         protected void CheckClick1(object sender, EventArgs e)
@@ -240,29 +260,41 @@ namespace VotingApp
 
         private void InsertOpinion(string opinion, int nr)
         {
-            //string user = ReadUser();
             if (nr == 1)
             {
                 string dbConnectionString = ConfigurationManager.ConnectionStrings["Baza DanychConnectionString"].ConnectionString;
                 using (SqlConnection connection = new SqlConnection(dbConnectionString))
                 {
+                    /*
                     string sql = "UPDATE Users SET IsOpinionSendSubject1 = 1 WHERE [Username] = @Email";
                     using (SqlCommand cmd = new SqlCommand(sql, connection))
                     {
                         connection.Open();
                         cmd.Parameters.AddWithValue("@Email", ReadUser());
                         cmd.ExecuteNonQuery();
-                    }
+                    }*/
 
-                    sql = "INSERT INTO Opinions(OpinionContent, OpinionNumber, OpinionIndexes, Year, GroupID, Teacher) VALUES (@Opinion, @OpNr, @OpIndex, @Year, @GroupID, @Teacher)";
+                    string sql = "INSERT INTO Opinions(OpinionContent, OpinionNumber, OpinionIndexes, Year, GroupID, Subject, Teacher) VALUES (@Opinion, @OpNr, @OpIndex, @Year, @GroupID, @Subject, @Teacher)";
                     using (SqlCommand cmd = new SqlCommand(sql, connection))
                     {
-                        //connection.Open();
+                        connection.Open();
                         cmd.Parameters.AddWithValue("@Opinion", opinion);
                         cmd.Parameters.AddWithValue("@OpNr", RadioButtonList1.SelectedValue);
                         cmd.Parameters.AddWithValue("@OpIndex", GetIndexesforOpinion(1));
                         cmd.Parameters.AddWithValue("@Year", Session["Year"]);
                         cmd.Parameters.AddWithValue("@GroupID", Session["GroupID"]);
+                        cmd.Parameters.AddWithValue("@Subject", Session["Subject1"]);
+                        cmd.Parameters.AddWithValue("@Teacher", Session["Teacher1"]);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    sql = "INSERT INTO UsersWithOpinionSend(Username, Year, GroupID, Subject, Teacher) VALUES (@User, @Year, @GroupID, @Subject, @Teacher)";
+                    using (SqlCommand cmd = new SqlCommand(sql, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@User", ReadUser());
+                        cmd.Parameters.AddWithValue("@Year", Session["Year"]);
+                        cmd.Parameters.AddWithValue("@GroupID", Session["GroupID"]);
+                        cmd.Parameters.AddWithValue("@Subject", Session["Subject1"]);
                         cmd.Parameters.AddWithValue("@Teacher", Session["Teacher1"]);
                         cmd.ExecuteNonQuery();
                     }
@@ -273,23 +305,36 @@ namespace VotingApp
                 string dbConnectionString = ConfigurationManager.ConnectionStrings["Baza DanychConnectionString"].ConnectionString;
                 using (SqlConnection connection = new SqlConnection(dbConnectionString))
                 {
+                    /*
                     string sql = "UPDATE Users SET IsOpinionSendSubject2 = 1 WHERE [Username] = @Email";
                     using (SqlCommand cmd = new SqlCommand(sql, connection))
                     {
                         connection.Open();
                         cmd.Parameters.AddWithValue("@Email", ReadUser());
                         cmd.ExecuteNonQuery();
-                    }
+                    }*/
 
-                    sql = "INSERT INTO Opinions(OpinionContent, OpinionNumber, OpinionIndexes, Year, GroupID, Teacher) VALUES (@Opinion, @OpNr, @OpIndex, @Year, @GroupID, @Teacher)";
+                    string sql = "INSERT INTO Opinions(OpinionContent, OpinionNumber, OpinionIndexes, Year, GroupID, Subject, Teacher) VALUES (@Opinion, @OpNr, @OpIndex, @Year, @GroupID, @Subject, @Teacher)";
                     using (SqlCommand cmd = new SqlCommand(sql, connection))
                     {
-                        //connection.Open();
+                        connection.Open();
                         cmd.Parameters.AddWithValue("@Opinion", opinion);
                         cmd.Parameters.AddWithValue("@OpNr", RadioButtonList2.SelectedValue);
                         cmd.Parameters.AddWithValue("@OpIndex", GetIndexesforOpinion(2));
                         cmd.Parameters.AddWithValue("@Year", Session["Year"]);
                         cmd.Parameters.AddWithValue("@GroupID", Session["GroupID"]);
+                        cmd.Parameters.AddWithValue("@Subject", Session["Subject2"]);
+                        cmd.Parameters.AddWithValue("@Teacher", Session["Teacher2"]);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    sql = "INSERT INTO UsersWithOpinionSend(Username, Year, GroupID, Subject, Teacher) VALUES (@User, @Year, @GroupID, @Subject, @Teacher)";
+                    using (SqlCommand cmd = new SqlCommand(sql, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@User", ReadUser());
+                        cmd.Parameters.AddWithValue("@Year", Session["Year"]);
+                        cmd.Parameters.AddWithValue("@GroupID", Session["GroupID"]);
+                        cmd.Parameters.AddWithValue("@Subject", Session["Subject2"]);
                         cmd.Parameters.AddWithValue("@Teacher", Session["Teacher2"]);
                         cmd.ExecuteNonQuery();
                     }
@@ -300,6 +345,7 @@ namespace VotingApp
                 string dbConnectionString = ConfigurationManager.ConnectionStrings["Baza DanychConnectionString"].ConnectionString;
                 using (SqlConnection connection = new SqlConnection(dbConnectionString))
                 {
+                    /*
                     string sql = "UPDATE Users SET IsOpinionSendSubject3 = 1 WHERE [Username] = @Email";
                     using (SqlCommand cmd = new SqlCommand(sql, connection))
                     {
@@ -307,16 +353,29 @@ namespace VotingApp
                         cmd.Parameters.AddWithValue("@Email", ReadUser());
                         cmd.ExecuteNonQuery();
                     }
+                    */
 
-                    sql = "INSERT INTO Opinions(OpinionContent, OpinionNumber, OpinionIndexes, Year, GroupID, Teacher) VALUES (@Opinion, @OpNr, @OpIndex, @Year, @GroupID, @Teacher)";
+                    string sql = "INSERT INTO Opinions(OpinionContent, OpinionNumber, OpinionIndexes, Year, GroupID, Subject, Teacher) VALUES (@Opinion, @OpNr, @OpIndex, @Year, @GroupID, @Subject, @Teacher)";
                     using (SqlCommand cmd = new SqlCommand(sql, connection))
                     {
-                        //connection.Open();
+                        connection.Open();
                         cmd.Parameters.AddWithValue("@Opinion", opinion);
                         cmd.Parameters.AddWithValue("@OpNr", RadioButtonList3.SelectedValue);
                         cmd.Parameters.AddWithValue("@OpIndex", GetIndexesforOpinion(3));
                         cmd.Parameters.AddWithValue("@Year", Session["Year"]);
                         cmd.Parameters.AddWithValue("@GroupID", Session["GroupID"]);
+                        cmd.Parameters.AddWithValue("@Subject", Session["Subject3"]);
+                        cmd.Parameters.AddWithValue("@Teacher", Session["Teacher3"]);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    sql = "INSERT INTO UsersWithOpinionSend(Username, Year, GroupID, Subject, Teacher) VALUES (@User, @Year, @GroupID, @Subject, @Teacher)";
+                    using (SqlCommand cmd = new SqlCommand(sql, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@User", ReadUser());
+                        cmd.Parameters.AddWithValue("@Year", Session["Year"]);
+                        cmd.Parameters.AddWithValue("@GroupID", Session["GroupID"]);
+                        cmd.Parameters.AddWithValue("@Subject", Session["Subject3"]);
                         cmd.Parameters.AddWithValue("@Teacher", Session["Teacher3"]);
                         cmd.ExecuteNonQuery();
                     }
@@ -327,34 +386,59 @@ namespace VotingApp
         private Boolean UserOpinionCheck(int nr)
         {
             Boolean check = false;
+            int checkint = -1;
             string dbConnectionString = ConfigurationManager.ConnectionStrings["Baza DanychConnectionString"].ConnectionString;
             SqlConnection con = new SqlConnection(dbConnectionString);
             if (nr == 1)
             {
-                SqlCommand cmd = new SqlCommand("Select IsOpinionSendSubject1 from Users where Username = @Email", con);
+                SqlCommand cmd = new SqlCommand("Select ID from UsersWithOpinionSend where Username = @Email and Subject = @Subject", con);
                 cmd.Parameters.AddWithValue("@Email", ReadUser());
+                cmd.Parameters.AddWithValue("@Subject", Session["Subject1"]);
                 con.Open();
                 SqlDataReader dr = cmd.ExecuteReader();
                 dr.Read();
-                check = dr.GetBoolean(0);
+                if (dr.HasRows)
+                {
+                    checkint = dr.GetInt32(0);
+                }
+                if (checkint > 0)
+                {
+                    check = true;
+                }
             }
             else if (nr == 2)
             {
-                SqlCommand cmd = new SqlCommand("Select IsOpinionSendSubject2 from Users where Username = @Email", con);
+                SqlCommand cmd = new SqlCommand("Select ID from UsersWithOpinionSend where Username = @Email and Subject = @Subject", con);
                 cmd.Parameters.AddWithValue("@Email", ReadUser());
+                cmd.Parameters.AddWithValue("@Subject", Session["Subject2"]);
                 con.Open();
                 SqlDataReader dr = cmd.ExecuteReader();
                 dr.Read();
-                check = dr.GetBoolean(0);
+                if (dr.HasRows)
+                {
+                    checkint = dr.GetInt32(0);
+                }
+                if (checkint > 0)
+                {
+                    check = true;
+                }
             }
             else
             {
-                SqlCommand cmd = new SqlCommand("Select IsOpinionSendSubject3 from Users where Username = @Email", con);
+                SqlCommand cmd = new SqlCommand("Select ID from UsersWithOpinionSend where Username = @Email and Subject = @Subject", con);
                 cmd.Parameters.AddWithValue("@Email", ReadUser());
+                cmd.Parameters.AddWithValue("@Subject", Session["Subject3"]);
                 con.Open();
                 SqlDataReader dr = cmd.ExecuteReader();
                 dr.Read();
-                check = dr.GetBoolean(0);
+                if (dr.HasRows)
+                {
+                    checkint = dr.GetInt32(0);
+                }
+                if (checkint > 0)
+                {
+                    check = true;
+                }
             }
             return check;
         }
@@ -428,17 +512,69 @@ namespace VotingApp
             Session["Subject3"] = s3;
         }
 
-
-        /*
-        static byte[] Decrypt(byte[] data, RSAParameters privateKey)
+        private void ShuffleOpinionsTable()
         {
-            using (var rsa = RSA.Create())
+            string dbConnectionString = ConfigurationManager.ConnectionStrings["Baza DanychConnectionString"].ConnectionString;
+            SqlConnection con = new SqlConnection(dbConnectionString);
+            SqlCommand cmd = new SqlCommand("Select * from Opinions", con);
+            con.Open();
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable table = new DataTable();
+            da.Fill(table);
+
+            int rows_nr = table.Rows.Count;
+            int[] indexes = new int[rows_nr];
+            for (int j = 0; j < rows_nr; j++)
             {
-                rsa.ImportParameters(privateKey);
-                return rsa.Decrypt(data, RSAEncryptionPadding.OaepSHA256);
+                indexes[j] = j;
+            }
+            Random rnd = new Random();
+            indexes = indexes.OrderBy(x => rnd.Next()).ToArray();
+            for (int i = 0; i < rows_nr; i++)
+            {
+                SqlCommand cmd1 = new SqlCommand("Update Opinions SET OpinionContent = @OpCon, OpinionNumber = @OpNr, OpinionIndexes = @OpInd, Year = @Year, GroupID = @GroupID, Subject = @Subject, Teacher = @Teacher WHERE OpinionId = @OpID", con);
+                cmd1.Parameters.AddWithValue("@OpCon", table.Rows[indexes[i]]["OpinionContent"].ToString());
+                cmd1.Parameters.AddWithValue("@OpNr", table.Rows[indexes[i]]["OpinionNumber"].ToString());
+                cmd1.Parameters.AddWithValue("@OpInd", table.Rows[indexes[i]]["OpinionIndexes"].ToString());
+                cmd1.Parameters.AddWithValue("@Year", table.Rows[indexes[i]]["Year"].ToString());
+                cmd1.Parameters.AddWithValue("@GroupID", table.Rows[indexes[i]]["GroupID"].ToString());
+                cmd1.Parameters.AddWithValue("@Subject", table.Rows[indexes[i]]["Subject"].ToString());
+                cmd1.Parameters.AddWithValue("@Teacher", table.Rows[indexes[i]]["Teacher"].ToString());
+                cmd1.Parameters.AddWithValue("@OpID", table.Rows[i]["OpinionId"].ToString());
+                cmd1.ExecuteNonQuery();
             }
         }
-        */
+
+        private void ShuffleUsersWithOpinionsTable()
+        {
+            string dbConnectionString = ConfigurationManager.ConnectionStrings["Baza DanychConnectionString"].ConnectionString;
+            SqlConnection con = new SqlConnection(dbConnectionString);
+            SqlCommand cmd = new SqlCommand("Select * from UsersWithOpinionSend", con);
+            con.Open();
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable table = new DataTable();
+            da.Fill(table);
+
+            int rows_nr = table.Rows.Count;
+            int[] indexes = new int[rows_nr];
+            for (int j = 0; j < rows_nr; j++)
+            {
+                indexes[j] = j;
+            }
+            Random rnd = new Random();
+            indexes = indexes.OrderBy(x => rnd.Next()).ToArray();
+            for (int i = 0; i < rows_nr; i++)
+            {
+                SqlCommand cmd1 = new SqlCommand("Update UsersWithOpinionSend SET Username = @User, Year = @Year, GroupID = @GroupID, Subject = @Subject, Teacher = @Teacher WHERE Id = @UserID", con);
+                cmd1.Parameters.AddWithValue("@User", table.Rows[indexes[i]]["Username"].ToString());
+                cmd1.Parameters.AddWithValue("@Year", table.Rows[indexes[i]]["Year"].ToString());
+                cmd1.Parameters.AddWithValue("@GroupID", table.Rows[indexes[i]]["GroupID"].ToString());
+                cmd1.Parameters.AddWithValue("@Subject", table.Rows[indexes[i]]["Subject"].ToString());
+                cmd1.Parameters.AddWithValue("@Teacher", table.Rows[indexes[i]]["Teacher"].ToString());
+                cmd1.Parameters.AddWithValue("@UserID", table.Rows[i]["Id"].ToString());
+                cmd1.ExecuteNonQuery();
+            }
+        }
     }
 }
  

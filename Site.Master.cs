@@ -71,7 +71,7 @@ namespace VotingApp
         {
 
             String user = ReadCookie();
-            if (user != "1" || Session["TeacherLoggedIn"] != null)
+            if ((user != "1" && Session["LoggedIn"] != null) || Session["TeacherLoggedIn"] != null)
             {
                 //RegisterLabel.Text = "Witaj";
                 LoginButton.Text = "Wyloguj się";
