@@ -13,12 +13,24 @@ using System.Data;
 
 namespace VotingApp
 {
+    /// <summary>
+    /// Klasa strony logowania
+    /// </summary>
     public partial class WebForm1 : System.Web.UI.Page
     {
+        /// <summary>
+        /// Funkcja wywoływana przy ładowaniu strony logowania
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <remarks>
+        /// <para>Funkcja sprawdza czy użytkownik jest już zalogowany. Dla zalogowanego zamiast pól do logowania jest wyświetlany komunikat.</para>
+        /// <para>Korzysta z metody ReadCookie</para>
+        /// </remarks>
         protected void Page_Load(object sender, EventArgs e)
         {
             String user = ReadCookie();
-            if (user != "1")
+            if (user != "1" && Session["LoggedIn"] != null)
             {
                 EmailLabel.Visible = false;
                 EmailTxt.Visible = false;
@@ -28,13 +40,22 @@ namespace VotingApp
                 LoggedInText.Visible = true;
             }
         }
-
+        /// <summary>
+        /// Metoda wywoływana przez przycisk logowania.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <remarks>
+        /// <para>Sprawdza czy podany mail istnieje w bazie i jeśli tak, sprawdza czy hasło zgadza się z tym podanym przy rejestracji</para>
+        /// <para>W przypadku sukcesu przekierowuje na stronę główną oraz zapisuje w zmiennych sesyjnych informację o tym, że użytkownik jest zalogowany
+        /// oraz o jego roczniku, grupie, przedmiotach.</para>
+        /// </remarks>
         protected void LoginClick(object sender, EventArgs e)
         {
             String email = EmailTxt.Text.Trim();
             String pass = PasswordTxt.Text.Trim();
             String domain = email.Substring(email.IndexOf("@") + 1);
-            email = email.Remove(email.IndexOf("@"));//, domain.Length + 1);
+            email = email.Remove(email.IndexOf("@"));
             if (EmailCheck(email))
             {
                 if (PassCheck(email, Encrypt(pass)))
@@ -44,6 +65,7 @@ namespace VotingApp
                     Session["Year"] = GetYear(email);
                     Session["GroupID"] = GetGroupID(email);
                     GetTeachers(email);
+                    Session["LoggedIn"] = "1";
                 }
                 else
                 {
@@ -54,13 +76,13 @@ namespace VotingApp
             {
                 FailureMessage.Text = "Podany mail nie jest zarejestrowany";
             }
-            //EmailLabel.Visible = false;
-            //EmailTxt.Visible = false;
-            //PasswordLabel.Visible = false;
-            //PasswordTxt.Visible = false;
-            }
+        }
 
-
+        /// <summary>
+        /// Metoda do sprawdzania, czy podany mail istnieje już w bazie
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns>Wartość logiczną</returns>
         private Boolean EmailCheck(string email)
         {
             Boolean check = false;
@@ -79,7 +101,12 @@ namespace VotingApp
             }
             return check;
         }
-
+        /// <summary>
+        /// Metoda do sprawdzania, czy dla danego maila podane hasło jest prawidłowe
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="pass"></param>
+        /// <returns>Wartość logiczną</returns>
         private Boolean PassCheck(string email, string pass)
         {
             Boolean check = false;
@@ -101,7 +128,12 @@ namespace VotingApp
             return check;
         }
 
-        
+        /// <summary>
+        /// Metoda służąca do szyfrowania
+        /// </summary>
+        /// <param name="clearText"></param>
+        /// <returns>Zaszyfrowany ciąg znaków</returns>
+        /// <remarks>Służy do sprawdzania podanego hasła z zaszyfrowanym hasłem podanym przy rejestracji.</remarks>
         private string Encrypt(string clearText)
         {
             string EncryptionKey = "MAKV2SPBNI99212";
@@ -123,30 +155,21 @@ namespace VotingApp
             }
             return clearText;
         }
-
+        /// <summary>
+        /// Ustawia po stronie użytkownika ciasteczko z nazwą użytkownika oraz kluczem szyfrującym po zalogowaniu.
+        /// </summary>
+        /// <param name="username"></param>
+        /// <remarks>Po udanym logowaniu zapisuje w ciasteczku zaszyfrowaną nazwę użytkownika oraz klucz prywatny algorytmu RSa do odszfyrowania tej
+        /// nazwy na innych podstronach aplikacji.</remarks>
         private void SetCookie(String username)
         {
-
-            //var (publicKey, privateKey) = GenerateKeys(2048);
-
-            //var encryptedData = Encrypt(data, publicKey);
-            //var decryptedData = Decrypt(encryptedData, privateKey);
-            //var rsa = RSA.Create();
-            //var privateKey = rsa.ToXmlString(true);
-            //var publicKey = rsa.ExportParameters(false);
-            //var publicKey = rsa.ToXmlString(false);
-            //StringWriter sw = new StringWriter();
-            //XmlTextWriter xw = new XmlTextWriter(sw);
-            //privateKey.WriteTo(xw);
-            //string xml = sw.ToString();
             username = username.Trim();
             username = username.Replace(".", "+");
-            //username = username.Replace(" ", "+");
             username += "+end";
             int mod4 = username.Length % 4;
             if (mod4 > 0)
             {
-                username += new string('=', 4 - mod4);
+                username += new string('+', 4 - mod4);
             }
 
             RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
@@ -157,15 +180,15 @@ namespace VotingApp
             {
                 HttpCookie userInfo = new HttpCookie("userInfo");
                 byte[] data = Convert.FromBase64String(username);
-                //userInfo["UserName"] = Encoding.Unicode.GetString(rsa.Encrypt(data, RSAEncryptionPadding.OaepSHA256));
-                //userInfo["PrivateKey"] = privateKey;
-                //userInfo.Expires = DateTime.MinValue;
                 userInfo["UserName"] = Convert.ToBase64String(rsa.Encrypt(data, true));
                 userInfo["PrivateKey"] = privatekey;
                 Response.Cookies.Add(userInfo);
             }
         }
-
+        /// <summary>
+        /// Odczytuje zaszyfrowaną nazwę użytkowika z ciasteczka.
+        /// </summary>
+        /// <returns>Zaszyfrowaną nazwę użytkownika lub 1, jeśli nie jest zalogowany</returns>
         private String ReadCookie()
         {
             string User_name = "1";
@@ -176,7 +199,11 @@ namespace VotingApp
             }
             return User_name;
         }
-
+        /// <summary>
+        /// Pobiera rocznik na podstawie podanego maila
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns>Rocznik w formie liczby całkowitej</returns>
         private int GetYear(string email)
         {
             int year = 0;
@@ -192,7 +219,11 @@ namespace VotingApp
             }
             return year;
         }
-
+        /// <summary>
+        /// Pobiera grupę użytownika na podstawie podanego maila.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns>ID grupy użytkownika</returns>
         private String GetGroupID(string email)
         {
             string group = "";
@@ -208,7 +239,10 @@ namespace VotingApp
             }
             return group;
         }
-
+        /// <summary>
+        /// Pobiera prowadzących użytkownika na podstawie maila oraz zapisuje ich w zmiennych sesyjnych.
+        /// </summary>
+        /// <param name="email"></param>
         private void GetTeachers(string email)
         {
             //string teacher1 = "";
@@ -229,64 +263,5 @@ namespace VotingApp
             Session["Teacher2"] = t2;
             Session["Teacher3"] = t3;
         }
-
-        /*static void Main(string[] args)
-        {
-            var data = new byte[] { 1, 2, 3 };
-            var (publicKey, privateKey) = GenerateKeys(2048);
-
-            var encryptedData = Encrypt(data, publicKey);
-            var decryptedData = Decrypt(encryptedData, privateKey);
-        }
-        
-        static (RSAParameters publicKey, RSAParameters privateKey) GenerateKeys(int keyLength)
-        {
-            using (var rsa = RSA.Create())
-            {
-                rsa.KeySize = keyLength;
-                return (
-                    publicKey: rsa.ExportParameters(includePrivateParameters: false),
-                    privateKey: rsa.ExportParameters(includePrivateParameters: true)
-                );
-            }
-        }
-
-        static byte[] Encrypt(byte[] data, RSAParameters publicKey)
-        {
-            using (var rsa = RSA.Create())
-            {
-                rsa.ImportParameters(publicKey);
-
-                var result = rsa.Encrypt(data, RSAEncryptionPadding.OaepSHA256);
-                return result;
-            }
-        }
-
-        static byte[] Decrypt(byte[] data, RSAParameters privateKey)
-        {
-            using (var rsa = RSA.Create())
-            {
-                rsa.ImportParameters(privateKey);
-                return rsa.Decrypt(data, RSAEncryptionPadding.OaepSHA256);
-            }
-        }
-
-        byte[] GetBytesFromPEM(string pemString, string section)
-        {
-            var header = String.Format("-----BEGIN {0}-----", section);
-            var footer = String.Format("-----END {0}-----", section);
-
-            var start = pemString.IndexOf(header, StringComparison.Ordinal);
-            if (start < 0)
-                return null;
-
-            start += header.Length;
-            var end = pemString.IndexOf(footer, start, StringComparison.Ordinal) - start;
-
-            if (end < 0)
-                return null;
-
-            return Convert.FromBase64String(pemString.Substring(start, end));
-        }*/
     }
 }

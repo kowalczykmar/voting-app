@@ -15,6 +15,30 @@ namespace VotingApp
     {
 
         /// <summary>
+        /// Kontrolka TeacherButton.
+        /// </summary>
+        /// <remarks>
+        /// Przycisk panelu dla prowadzących.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button TeacherButton;
+
+        /// <summary>
+        /// Kontrolka RegisterButton.
+        /// </summary>
+        /// <remarks>
+        /// Przycisk rejestracji.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button RegisterButton;
+
+        /// <summary>
+        /// Kontrolka LoginButton.
+        /// </summary>
+        /// <remarks>
+        /// Przycisk logowania.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button LoginButton;
+
+        /// <summary>
         /// Kontrolka MainContent.
         /// </summary>
         /// <remarks>

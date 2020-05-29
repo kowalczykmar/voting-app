@@ -1,0 +1,1256 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>VotingApp</name>
+    </assembly>
+    <members>
+        <member name="T:VotingApp._Default">
+            <summary>
+            Strona główna aplikacji - służy do przesyłania opinii.
+            </summary>
+            <summary>
+            Klasy strony głównej z kontrolkami ASP.NET
+            </summary>
+        </member>
+        <member name="M:VotingApp._Default.Page_Load(System.Object,System.EventArgs)">
+            <summary>
+            Przy wywołaniu strony Default sprawdzamy, czy użytkownik jest zalogowany i w zależności od tego wyświetlamy funkcjonalności, bądź nie.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+            <remarks>
+            <para>Jeśli zalogowany jest prowadzący, strona przekierowuje na stronę główną panelu dla prowadzących</para>
+            <para>Jeśli użytkownik nie jest zalogowany (rozponanie następuje po zczytaniu nazwy użytkownika z ciasteczka oraz zmiennej sesyjnej), 
+            nie są wyświetlane żadne pola do przesyłania opinii, jedynie komentarz, aby się zalogował. Jeśli jest zalogowany, dostępne są pola 
+            do przesyłania opinii (komentarz słowny, pola jednokrotnego oraz wielokrotnego wyboru). Wyświetlane są jedynie te, dla których nie została 
+            przesłana jeszcze opinia. Jeśli opinia dla któregoś przedmiotu została już przesłana, wyświetlane jest jedynie pole do wpisania 
+            unikalnego kodu umożliwiającego sprawdzenie, czy opinia jest poprawnie zapisana w bazie.</para>
+            <para>korzysta z metod ReadCookie, GetSubjects, UserOpinionCheck</para>
+            </remarks>
+        </member>
+        <member name="M:VotingApp._Default.ReadCookie">
+            <summary>
+            Funkcja służy odczytywaniu informacji z ciasteczka po stronie użytkownika
+            </summary>
+            <returns>Nazwę użytkownika</returns>
+            <remarks>
+            Zwraca 1, jeśli ciasteczko nie istnieje lub jeśli użytkownik nie jest zalogowany, lub zaszyfrowaną nazwę użytkownika, jeśli jest zalogowany.
+            </remarks>
+        </member>
+        <member name="M:VotingApp._Default.ReadUser">
+            <summary>
+            Funkcja do odczytywania zaszyfrowanej nazwy użytkownika
+            </summary>
+            <returns>Odszyfrowaną nazwę użytkownika</returns>
+            <remarks>Jeśli ciasteczko nie istnieje, zwraca 1. Używa do odszyfrowania klucza prywatnego zapisanego w ciasteczku oraz algorytmu RSA</remarks>
+        </member>
+        <member name="M:VotingApp._Default.Submit1Click(System.Object,System.EventArgs)">
+            <summary>
+            Wywołanie akcji w wyniku kliknięcia przyscisku przesłania opinii przedmiotu pierwszego
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+            <remarks>
+            <para>Wywołuje metodę InsertOpinion w celu wprowadzenia opinii do bazy.</para>
+            <para>Odpowiada za zniknięcie ze strony pól do przesyłania opinii oraz wyświetlenie pól z tekstem podziękowania oraz wyświetleniem 
+            unikalnego kodu do sprawdzenia czy opinia została poprawnie zapisana w bazie jak i wyświetlenie pola do wpisania kodu.</para>
+            <para>Wywołuje metody odpowiedzialne za przemiszanie tabel po dodaniu opinii.</para>
+            </remarks>
+        </member>
+        <member name="M:VotingApp._Default.Submit2Click(System.Object,System.EventArgs)">
+            <summary>
+            Wywołanie akcji w wyniku kliknięcia przyscisku przesłania opinii przedmiotu drugiego
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+            <remarks>
+            <para>Wywołuje metodę InsertOpinion w celu wprowadzenia opinii do bazy.</para>
+            <para>Odpowiada za zniknięcie ze strony pól do przesyłania opinii oraz wyświetlenie pól z tekstem podziękowania oraz wyświetleniem 
+            unikalnego kodu do sprawdzenia czy opinia została poprawnie zapisana w bazie jak i wyświetlenie pola do wpisania kodu.</para>
+            <para>Wywołuje metody odpowiedzialne za przemiszanie tabel po dodaniu opinii.</para>
+            </remarks>
+        </member>
+        <member name="M:VotingApp._Default.Submit3Click(System.Object,System.EventArgs)">
+            <summary>
+            Wywołanie akcji w wyniku kliknięcia przyscisku przesłania opinii przedmiotu trzeciego
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+            <remarks>
+            <para>Wywołuje metodę InsertOpinion w celu wprowadzenia opinii do bazy.</para>
+            <para>Odpowiada za zniknięcie ze strony pól do przesyłania opinii oraz wyświetlenie pól z tekstem podziękowania oraz wyświetleniem 
+            unikalnego kodu do sprawdzenia czy opinia została poprawnie zapisana w bazie jak i wyświetlenie pola do wpisania kodu.</para>
+            <para>Wywołuje metody odpowiedzialne za przemiszanie tabel po dodaniu opinii.</para>
+            </remarks>
+        </member>
+        <member name="M:VotingApp._Default.CheckClick1(System.Object,System.EventArgs)">
+            <summary>
+            Przycisk do sprawdzenia czy opinia do przedmiotu pierwszego została poprawnie zapisana w bazie
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+            <remarks>
+            <para>Pobiera unikalny kod i sprawdza kody tworzone dla wszystkich opinii zapisanych w bazie.</para>
+            <para>W przypadku sukcesu pola do wpisywania kodu oraz przycisk nie są dłużej wyświetlane na stronie.</para>
+            </remarks>
+        </member>
+        <member name="M:VotingApp._Default.CheckClick2(System.Object,System.EventArgs)">
+            <summary>
+            Przycisk do sprawdzenia czy opinia do przedmiotu drugiego została poprawnie zapisana w bazie
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+            <remarks>
+            <para>Pobiera unikalny kod i sprawdza kody tworzone dla wszystkich opinii zapisanych w bazie.</para>
+            <para>W przypadku sukcesu pola do wpisywania kodu oraz przycisk nie są dłużej wyświetlane na stronie.</para>
+            </remarks>
+        </member>
+        <member name="M:VotingApp._Default.CheckClick3(System.Object,System.EventArgs)">
+            <summary>
+            Przycisk do sprawdzenia czy opinia do przedmiotu trzeciego została poprawnie zapisana w bazie
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+            <remarks>
+            <para>Pobiera unikalny kod i sprawdza kody tworzone dla wszystkich opinii zapisanych w bazie.</para>
+            <para>W przypadku sukcesu pola do wpisywania kodu oraz przycisk nie są dłużej wyświetlane na stronie.</para>
+            </remarks>
+        </member>
+        <member name="M:VotingApp._Default.InsertOpinion(System.String,System.Int32)">
+            <summary>
+            Metoda służąca wprowadzaniu opinii do bazy
+            </summary>
+            <param name="opinion"></param>
+            <param name="nr"></param>
+            <remarks>
+            <para>Metoda ta pobiera tekst opinii oraz numer nr, czyli informację, do którego przedmiotu opinia ta się odnosi</para>
+            <para>Metoda zapisuje w tabeli z opiniami koemntarz słowny oraz zaznaczone opcje jednokrotnego i wielokrotnego wyboru w formie zaszyfrowanej wraz z 
+            informacją o roku, grupie, przedmiocie i prowadzącym zajęcia.</para>
+            <para>Metoda ta również zapisuje w tabeli użytkowników, którzy przesłali opinię nazwę użytkownika wraz z rokiem, grupą oraz przedmiotem 
+            i prowadzącym, którego opinia się tyczy.</para>
+            <para>Metoda ta korzysta z metod ReadUser oraz GetIndexesforOpinion</para>
+            </remarks>
+        </member>
+        <member name="M:VotingApp._Default.UserOpinionCheck(System.Int32)">
+            <summary>
+            Metoda sprawdzająca, czy dla danego przedmiotu opinia została już przesłana
+            </summary>
+            <param name="nr"></param>
+            <returns>Wartość logiczną</returns>
+            <remarks>Przekzywany metodzie numer nr decyduje o tym, który przedmiot jest sprawdzany pod kątem przesłania opinii.</remarks>
+        </member>
+        <member name="M:VotingApp._Default.OpinionCode(System.String)">
+            <summary>
+            Metoda tworząca unikalny kod na podstawie przesłanej opinii i nazwy użytkownika i hashuje go
+            </summary>
+            <param name="opinion"></param>
+            <returns>Ciąg cyfrowo-znakowy</returns>
+            <remarks>Kod nie jest nigdzie zapisywany - użytkownik musi go przechować we własnym zakresie, jeśli chce z niego później skorzystać</remarks>
+        </member>
+        <member name="M:VotingApp._Default.GetIndexesforOpinion(System.Int32)">
+            <summary>
+            Metoda zczytuje zaznaczone opcje wielokrotnego wyboru
+            </summary>
+            <param name="nr"></param>
+            <returns>Indeksy w formie ciągu znaków</returns>
+            <remarks>
+            <para>Jeśli nie została zaznaczona żadna opcja, zwraca pusty ciąg.</para>
+            <para>Numer nr przekazywany metodzie decyduje o tym, opinie dla którego przedmiotu bierzemy pod uwagę.</para>
+            </remarks>
+        </member>
+        <member name="M:VotingApp._Default.GetSubjects">
+            <summary>
+            Metoda pobierająca przedmioty z tabeli z użytkownikami i zapisująca je w zmiennych sesyjnych.
+            </summary>
+        </member>
+        <member name="M:VotingApp._Default.ShuffleOpinionsTable">
+            <summary>
+            Metoda zmieniająca losowo kolejność wpisów w tabeli z przesłanymi opiniami
+            </summary>
+            <remarks>Przemieszanie wpisów służy zaciemnianiu obrazu danych przed administratorem oraz prowadzącym.</remarks>
+        </member>
+        <member name="M:VotingApp._Default.ShuffleUsersWithOpinionsTable">
+            <summary>
+            Metoda zmieniająca losowo kolejność wpisów w tabeli z użytkownikami, którzy wysłali już opinię
+            </summary>
+            <remarks>Przemieszanie wpisów służy zaciemnianiu obrazu danych przed administratorem oraz prowadzącym.</remarks>
+        </member>
+        <member name="M:VotingApp._Default.Encrypt(System.String)">
+            <summary>
+            Funkcja do szyfrowania opinii
+            </summary>
+            <param name="clearText"></param>
+            <returns>Zaszyfrowany tekst w formie tekstowej</returns>
+            <remarks>
+            Funkcja szyfruje tekst w oparciu o algorytm AES oraz klucz, który znajduje się w niedostępnym dla administratora pliku zewnętrznym.
+            </remarks>
+        </member>
+        <member name="M:VotingApp._Default.Decrypt(System.String)">
+            <summary>
+            Funkcja do odszyfrowywania.
+            </summary>
+            <param name="cipherText"></param>
+            <returns>Odszyfrowany tekst</returns>
+            <remarks>
+            Jest funkcją odwrotną do Encrypt, używamy jej, aby sprawdzić czy opinia o podanym unikalnym kodzie jest zapisana poprawnie w bazie.
+            </remarks>
+        </member>
+        <member name="M:VotingApp._Default.ComputeSha256Hash(System.String)">
+            <summary>
+            Funkcja hashująca
+            </summary>
+            <param name="rawData"></param>
+            <returns>Skrót wporwadzonego tekstu</returns>
+            <remarks>
+            Służy do tworzenia skrótu unikalnego kodu po przesłaniu opinii.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.NotLoggedIn1">
+            <summary>
+            Kontrolka NotLoggedIn1.
+            </summary>
+            <remarks>
+            Wyświetla tekst o konieczności zalogowania dla użytkownika niezalogowanego przy polu opinii do pierwszego przedmiotu.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.Subject1">
+            <summary>
+            Kontrolka Subject1.
+            </summary>
+            <remarks>
+            Wyświetla nazwę przedmiotu pierwszego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.Teacher1">
+            <summary>
+            Kontrolka Teacher1.
+            </summary>
+            <remarks>
+            Wyświetla prowadzącego przedmiotu pierwszego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.Opinion1">
+            <summary>
+            Kontrolka Opinion1.
+            </summary>
+            <remarks>
+            Służy wpisywaniu opinii słownej do przedmiotu pierwszego. 
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.OpinionValidator1">
+            <summary>
+            Kontrolka OpinionValidator1.
+            </summary>
+            <remarks>
+            Walidator służący zapewnieniu, że pole z opinią do przedmiotu pierwszego nie będzie puste przy przesyłaniu opinii.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.RadioButtonText1">
+            <summary>
+            Kontrolka RadioButtonText1.
+            </summary>
+            <remarks>
+            Tekst do listy pól jednokrotnego wyboru (ocena zajęć w skali 1-5) dla przemdiotu pierwszego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.RadioButtonList1">
+            <summary>
+            Kontrolka RadioButtonList1.
+            </summary>
+            <remarks>
+            Lista pól jednokrotnego wyboru (ocena zajęć w skali 1-5) dla przemdiotu pierwszego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.RequiredFieldValidator1">
+            <summary>
+            Kontrolka RequiredFieldValidator1.
+            </summary>
+            <remarks>
+            Walidator służący zapewnieniu, że pole jednokrotnego wyboru dla przedmiotu pierwszego nie będzie puste przy przesyłaniu opinii.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.CheckboxText1">
+            <summary>
+            Kontrolka CheckboxText1.
+            </summary>
+            <remarks>
+            Tekst do listy pól wielokrotnego wyboru dla przedmiotu pierwszego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.CheckboxList1">
+            <summary>
+            Kontrolka CheckboxList1.
+            </summary>
+            <remarks>
+            Lista pól wielokrotnego wyboru dla przedmiotu pierwszego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.SubmitButton1">
+            <summary>
+            Kontrolka SubmitButton1.
+            </summary>
+            <remarks>
+            Przycisk do przesłania opinii dla przedmiotu pierwszego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.Code1">
+            <summary>
+            Kontrolka Code1.
+            </summary>
+            <remarks>
+            Pole do wpisania unikalnego kodu do sprawdzania czy opinia dla przedmiotu pierwszego jest poprawnie zapisana w bazie.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.CheckOpinionBtn1">
+            <summary>
+            Kontrolka CheckOpinionBtn1.
+            </summary>
+            <remarks>
+            Przycisk do przesłania unikalnego kodu dla przedmiotu pierwszego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.NotLoggedIn2">
+            <summary>
+            Kontrolka NotLoggedIn2.
+            </summary>
+            <remarks>
+            Wyświetla tekst o konieczności zalogowania dla użytkownika niezalogowanego przy polu opinii do drugiego przedmiotu.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.Subject2">
+            <summary>
+            Kontrolka Subject2.
+            </summary>
+            <remarks>
+            Wyświetla nazwę przedmiotu drugiego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.Teacher2">
+            <summary>
+            Kontrolka Teacher2.
+            </summary>
+            <remarks>
+            Wyświetla prowadzącego przedmiotu drugiego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.Opinion2">
+            <summary>
+            Kontrolka Opinion2.
+            </summary>
+            <remarks>
+            Służy wpisywaniu opinii słownej do przedmiotu drugiego. 
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.OpinionValidator2">
+            <summary>
+            Kontrolka OpinionValidator2.
+            </summary>
+            <remarks>
+            Walidator służący zapewnieniu, że pole z opinią do przedmiotu drugiego nie będzie puste przy przesyłaniu opinii.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.RadioButtonText2">
+            <summary>
+            Kontrolka RadioButtonText2.
+            </summary>
+            <remarks>
+            Tekst do listy pól jednokrotnego wyboru (ocena zajęć w skali 1-5) dla przemdiotu drugiego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.RadioButtonList2">
+            <summary>
+            Kontrolka RadioButtonList2.
+            </summary>
+            <remarks>
+            Lista pól jednokrotnego wyboru (ocena zajęć w skali 1-5) dla przemdiotu drugiego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.RequiredFieldValidator2">
+            <summary>
+            Kontrolka RequiredFieldValidator2.
+            </summary>
+            <remarks>
+            Walidator służący zapewnieniu, że pole jednokrotnego wyboru dla przedmiotu drugiego nie będzie puste przy przesyłaniu opinii.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.CheckboxText2">
+            <summary>
+            Kontrolka CheckboxText2.
+            </summary>
+            <remarks>
+            Tekst do listy pól wielokrotnego wyboru dla przedmiotu drugiego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.CheckboxList2">
+            <summary>
+            Kontrolka CheckboxList2.
+            </summary>
+            <remarks>
+            Lista pól wielokrotnego wyboru dla przedmiotu drugiego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.SubmitButton2">
+            <summary>
+            Kontrolka SubmitButton2.
+            </summary>
+            <remarks>
+            Przycisk do przesłania opinii dla przedmiotu drugiego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.Code2">
+            <summary>
+            Kontrolka Code2.
+            </summary>
+            <remarks>
+            Pole do wpisania unikalnego kodu do sprawdzania czy opinia dla przedmiotu drugiego jest poprawnie zapisana w bazie.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.CheckOpinionBtn2">
+            <summary>
+            Kontrolka CheckOpinionBtn2.
+            </summary>
+            <remarks>
+            Przycisk do przesłania unikalnego kodu dla przedmiotu drugiego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.NotLoggedIn3">
+            <summary>
+            Kontrolka NotLoggedIn3.
+            </summary>
+            <remarks>
+            Wyświetla tekst o konieczności zalogowania dla użytkownika niezalogowanego przy polu opinii do trzeciego przedmiotu.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.Subject3">
+            <summary>
+            Kontrolka Subject3.
+            </summary>
+            <remarks>
+            Wyświetla nazwę przedmiotu trzeciego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.Teacher3">
+            <summary>
+            Kontrolka Teacher3.
+            </summary>
+            <remarks>
+            Wyświetla prowadzącego przedmiotu trzeciego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.Opinion3">
+            <summary>
+            Kontrolka Opinion3.
+            </summary>
+            <remarks>
+            Służy wpisywaniu opinii słownej do przedmiotu trzeciego. 
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.OpinionValidator3">
+            <summary>
+            Kontrolka OpinionValidator3.
+            </summary>
+            <remarks>
+            Walidator służący zapewnieniu, że pole z opinią do przedmiotu trzeciego nie będzie puste przy przesyłaniu opinii.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.RadioButtonText3">
+            <summary>
+            Kontrolka RadioButtonText3.
+            </summary>
+            <remarks>
+            Tekst do listy pól jednokrotnego wyboru (ocena zajęć w skali 1-5) dla przemdiotu trzeciego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.RadioButtonList3">
+            <summary>
+            Kontrolka RadioButtonList3.
+            </summary>
+            <remarks>
+            Lista pól jednokrotnego wyboru (ocena zajęć w skali 1-5) dla przemdiotu trzeciego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.RequiredFieldValidator3">
+            <summary>
+            Kontrolka RequiredFieldValidator3.
+            </summary>
+            <remarks>
+            Walidator służący zapewnieniu, że pole jednokrotnego wyboru dla przedmiotu trzeciego nie będzie puste przy przesyłaniu opinii.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.CheckboxText3">
+            <summary>
+            Kontrolka CheckboxText3.
+            </summary>
+            <remarks>
+            Tekst do listy pól wielokrotnego wyboru dla przedmiotu trzeciego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.CheckboxList3">
+            <summary>
+            Kontrolka CheckboxList3.
+            </summary>
+            <remarks>
+            Lista pól wielokrotnego wyboru dla przedmiotu trzeciego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.SubmitButton3">
+            <summary>
+            Kontrolka SubmitButton3.
+            </summary>
+            <remarks>
+            Przycisk do przesłania opinii dla przedmiotu trzeciego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.Code3">
+            <summary>
+            Kontrolka Code3.
+            </summary>
+            <remarks>
+            Pole do wpisania unikalnego kodu do sprawdzania czy opinia dla przedmiotu trzeciego jest poprawnie zapisana w bazie.
+            </remarks>
+        </member>
+        <member name="F:VotingApp._Default.CheckOpinionBtn3">
+            <summary>
+            Kontrolka CheckOpinionBtn3.
+            </summary>
+            <remarks>
+            Przycisk do przesłania unikalnego kodu dla przedmiotu trzeciego.
+            </remarks>
+        </member>
+        <member name="T:VotingApp.SiteMaster">
+            <summary>
+            Klasa MasterPage, która odpowiada za część wspólnych funkcjonalności wszytskich stron, np. za odpowiednie wyświetlanie nagłówka.
+            </summary>
+        </member>
+        <member name="M:VotingApp.SiteMaster.Page_Load(System.Object,System.EventArgs)">
+            <summary>
+            Metoda wywoływana przy załadowaniu strony.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+            <remarks>Jeśli użytkownik jest już zalogowany, zmienia treść przycisku logowania na "Wyloguj się" oraz ukrywa przycisk rejestracji.</remarks>
+        </member>
+        <member name="M:VotingApp.SiteMaster.ReadCookie">
+            <summary>
+            Metoda odczytująca nazwę użytkownika z ciasteczka.
+            </summary>
+            <returns>Zaszyfrowaną nazwę użytkownika lub 1 dla niezalogowanego użytkownika</returns>
+        </member>
+        <member name="M:VotingApp.SiteMaster.LoginClick(System.Object,System.EventArgs)">
+            <summary>
+            Metoda przycisku logowania
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+            <remarks>
+            <para>Jeśli użytkownik jest zalogowany, służy wylogowaniu. Wtedy nadpisuje ciasteczko nowym, w którym nazwa użytkownika to 1</para>
+            <para>Dla niezalogowanego użytkownika kieruje na stronę logowania</para>
+            <para>Dla zalogowanego prowadzącego służy do wylogowania. Wtedy usuwa zmienną sesyjną przechowującą informację o zalogowanym prowadzącym.</para>
+            </remarks>
+        </member>
+        <member name="M:VotingApp.SiteMaster.RegisterClick(System.Object,System.EventArgs)">
+            <summary>
+            Przycisk rejestracji, kieruje niezalogowanego użytkownika na stronę rejestracji.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+        </member>
+        <member name="M:VotingApp.SiteMaster.TeacherClick(System.Object,System.EventArgs)">
+            <summary>
+            Metoda przycisku Panel dla prowadzących.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+            <remarks>Kieruje zalogowanego prowadzącego na stronę główną panelu dla prowadzących, gdzie wyświetlane są opinie o jego przediotach. 
+            Niezalogowanego użytkownika kieruje na stronę logowania dla prowadzących.</remarks>
+        </member>
+        <member name="F:VotingApp.SiteMaster.TeacherButton">
+            <summary>
+            Kontrolka TeacherButton.
+            </summary>
+            <remarks>
+            Przycisk panelu dla prowadzących.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.SiteMaster.RegisterButton">
+            <summary>
+            Kontrolka RegisterButton.
+            </summary>
+            <remarks>
+            Przycisk rejestracji.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.SiteMaster.LoginButton">
+            <summary>
+            Kontrolka LoginButton.
+            </summary>
+            <remarks>
+            Przycisk logowania.
+            </remarks>
+        </member>
+        <member name="T:VotingApp.TeacherDefault">
+            <summary>
+            Klasa strony głównej Panelu dla prowadzących
+            </summary>
+        </member>
+        <member name="M:VotingApp.TeacherDefault.Page_Load(System.Object,System.EventArgs)">
+            <summary>
+            Metoda wywoływana przy załadowaniu strony głównej panelu dla prowadzących.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+            <remarks>Jeśli żaden prowadzący nie jest zalogowany, przekierowuje na stronę logowania dla prowadzących. Jeśli jest, odczytuje odpowiednie
+            nazwy przedmiotów z zmiennych sesyjnych i przypisuje je do nagłówków nad tabelami. Wywołuje odpowiednie metody GetData celem wypełnienia
+            tabel z opiniami o przedmiotach</remarks>
+        </member>
+        <member name="M:VotingApp.TeacherDefault.GetData(System.Int32)">
+            <summary>
+            Metoda zaciągająca dane z tabel z opiniami oraz użytkownikami, którzy przesłali opinie i wypełnia nimi tabele na stronie.
+            </summary>
+            <param name="groupnr"></param>
+            <remarks>
+            <para>W zależności od przekazanego numer grupy przypisuje do wewnętrznej zmiennej odpowiednią nazwę grupy oraz wypełnia odpowiednie tabele na stronie.</para>
+            <para>W pierwszym kroku metoda zaciąga słowne opinie o przemdiocie i odszyfrowuje je oraz usuwa ostatni wiersz, jeśli ilość wierszy jest nieparzysta.</para>
+            <para>W następnym kroku pobiera dane o użytkownikach, którzy wysłali opinię do odpowiedniego przedmiotu.</para>
+            <para>Następnie pobiera dane o zaznaczonych opcjach wyboru wielokrotnego (ucinając ostatni nieparzysty wiersz), odszyfrowuje a następnie odczytuje 
+            zapisane indeksy opinii oraz przypisuje ilości zaznaczonych opcji do pomocniczej tabeli</para>
+            <para>Następnie pobiera dane o zaznaczonych opcjach wyboru jednokrotnego (ucinając ostatni nieparzysty wiersz), odszyfrowuje a następnie odczytuje 
+            zapisane indeksy opinii oraz przypisuje ilości zaznaczonych opcji do pomocniczej tabeli, a także wylicza średnią ocen</para>
+            <para>W ostatnim kroku przypisuje odpowiednie tabele do tabeli wyświetlanych na stronie celem zaprezentowania odpowiednich danych</para>
+            </remarks>
+        </member>
+        <member name="M:VotingApp.TeacherDefault.Decrypt(System.String)">
+            <summary>
+            Metoda odszyfrowująca opinie.
+            </summary>
+            <param name="cipherText"></param>
+            <returns>Odszyfrowaną treść opinii słownej</returns>
+        </member>
+        <member name="F:VotingApp.TeacherDefault.Header1">
+            <summary>
+            Kontrolka Header1.
+            </summary>
+            <remarks>
+            Tytuł do tabel dla przedmiotu pierwszego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherDefault.Opinions1">
+            <summary>
+            Kontrolka Opinions1.
+            </summary>
+            <remarks>
+            Tabela z opiniami słownymi do przedmiotu pierwszego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherDefault.UsersWithOpinionSend1">
+            <summary>
+            Kontrolka UsersWithOpinionSend1.
+            </summary>
+            <remarks>
+            Tabela z użytkownikami, którzy wysłali opinię do przedmiotu pierwszego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherDefault.OpinionIndexes1">
+            <summary>
+            Kontrolka OpinionIndexes1.
+            </summary>
+            <remarks>
+            Tabela z ilością zaznaczonych opcji wielokrotnego wyboru do przedmiotu pierwszego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherDefault.OpinionNumbers1">
+            <summary>
+            Kontrolka OpinionNumbers1.
+            </summary>
+            <remarks>
+            Tabela z ilością zaznaczonych opcji jednokrotnego wyboru do przemdiotu pierwszego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherDefault.Average1">
+            <summary>
+            Kontrolka Average1.
+            </summary>
+            <remarks>
+            Pole z wypisaną średnią ocen dla przedmiotu pierwszego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherDefault.Header2">
+            <summary>
+            Kontrolka Header2.
+            </summary>
+            <remarks>
+            Tytuł do tabel dla przedmiotu drugiego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherDefault.Opinions2">
+            <summary>
+            Kontrolka Opinions2.
+            </summary>
+            <remarks>
+            Tabela z opiniami słownymi do przedmiotu drugiego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherDefault.UsersWithOpinionSend2">
+            <summary>
+            Kontrolka UsersWithOpinionSend2.
+            </summary>
+            <remarks>
+            Tabela z użytkownikami, którzy wysłali opinię do przedmiotu drugiego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherDefault.OpinionIndexes2">
+            <summary>
+            Kontrolka OpinionIndexes2.
+            </summary>
+            <remarks>
+            Tabela z ilością zaznaczonych opcji wielokrotnego wyboru do przedmiotu drugiego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherDefault.OpinionNumbers2">
+            <summary>
+            Kontrolka OpinionNumbers2.
+            </summary>
+            <remarks>
+            Tabela z ilością zaznaczonych opcji jednokrotnego wyboru do przemdiotu drugiego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherDefault.Average2">
+            <summary>
+            Kontrolka Average2.
+            </summary>
+            <remarks>
+            Pole z wypisaną średnią ocen dla przedmiotu drugiego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherDefault.Header3">
+            <summary>
+            Kontrolka Header3.
+            </summary>
+            <remarks>
+            Tytuł do tabel dla przedmiotu trzeciego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherDefault.Opinions3">
+            <summary>
+            Kontrolka Opinions3.
+            </summary>
+            <remarks>
+            Tabela z opiniami słownymi do przedmiotu trzeciego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherDefault.UsersWithOpinionSend3">
+            <summary>
+            Kontrolka UsersWithOpinionSend3.
+            </summary>
+            <remarks>
+            Tabela z użytkownikami, którzy wysłali opinię do przedmiotu trzeciego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherDefault.OpinionIndexes3">
+            <summary>
+            Kontrolka OpinionIndexes3.
+            </summary>
+            <remarks>
+            Tabela z ilością zaznaczonych opcji wielokrotnego wyboru do przedmiotu trzeciego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherDefault.OpinionNumbers3">
+            <summary>
+            Kontrolka OpinionNumbers3.
+            </summary>
+            <remarks>
+            Tabela z ilością zaznaczonych opcji jednokrotnego wyboru do przemdiotu trzeciego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherDefault.Average3">
+            <summary>
+            Kontrolka Average3.
+            </summary>
+            <remarks>
+            Pole z wypisaną średnią ocen dla przedmiotu trzeciego.
+            </remarks>
+        </member>
+        <member name="T:VotingApp.TeacherLogin">
+            <summary>
+            klasa strony do logowania dla prowadzących.
+            </summary>
+        </member>
+        <member name="M:VotingApp.TeacherLogin.Page_Load(System.Object,System.EventArgs)">
+            <summary>
+            Metoda wywoływana przy załadowaniu strony
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+            <remarks>Jeśli prowadzący jest już zalogowany, wyświetla odpowiedni komunikat i ukrywa pola logowania.</remarks>
+        </member>
+        <member name="M:VotingApp.TeacherLogin.LoginClick(System.Object,System.EventArgs)">
+            <summary>
+            Metoda wywoływana przy naciśnięciu przycisku logowania.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+            <remarks>
+            Sprawdza czy login i hasło są prawidłowe. Przy powodzeniu zapisuje informację o zalogowanym prowadzącym w zmiennej sesyjnej oraz przekierowuje
+            na stronę główną panelu dla prowadzących. Przy niepowodzeniu wyświetla odpowiedni komunikat.
+            </remarks>
+        </member>
+        <member name="M:VotingApp.TeacherLogin.ReadSubject">
+            <summary>
+            Odczytuje przedmioty prowadzącego i zapisuje w zmiennych sesyjnych.
+            </summary>
+        </member>
+        <member name="F:VotingApp.TeacherLogin.FailureMessage">
+            <summary>
+            Kontrolka FailureMessage.
+            </summary>
+            <remarks>
+            Wyświetla tekst o błędzie w przypadku niepowodzenia logowania.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherLogin.ErrorMessage">
+            <summary>
+            Kontrolka ErrorMessage.
+            </summary>
+            <remarks>
+            Wyświetla tekst o błędzie w przypadku niepowodzenia logowania.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherLogin.FailureText">
+            <summary>
+            Kontrolka FailureText.
+            </summary>
+            <remarks>
+            Wyświetla tekst o błędzie w przypadku niepowodzenia logowania.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherLogin.EmailLabel">
+            <summary>
+            Kontrolka EmailLabel.
+            </summary>
+            <remarks>
+            Etykieta do pola do wpisania loginu prowadzącego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherLogin.EmailTxt">
+            <summary>
+            Kontrolka EmailTxt.
+            </summary>
+            <remarks>
+            Pole do wpisania loginu prowadzącego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherLogin.EmailValidator">
+            <summary>
+            Kontrolka EmailValidator.
+            </summary>
+            <remarks>
+            Walidator służący upewnieniu się, że pole loginu nie będzie puste przy logowaniu.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherLogin.PasswordLabel">
+            <summary>
+            Kontrolka PasswordLabel.
+            </summary>
+            <remarks>
+            Etykieta do pola do wpisania hasła prowadzącego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherLogin.PasswordTxt">
+            <summary>
+            Kontrolka PasswordTxt.
+            </summary>
+            <remarks>
+            Pole do wpisania hasła prowadzącego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherLogin.PassValidator">
+            <summary>
+            Kontrolka PassValidator.
+            </summary>
+            <remarks>
+            Walidator służący upewnieniu się, że pole hasła nie będzie puste przy logowaniu.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherLogin.LoginButton">
+            <summary>
+            Kontrolka LoginButton.
+            </summary>
+            <remarks>
+            Przycisk logowania. Wywołuje metodą odpowiedzialną za zalogowanie prowadzącego.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.TeacherLogin.LoggedInText">
+            <summary>
+            Kontrolka LoggedInText.
+            </summary>
+            <remarks>
+            Pole wyświetlające komunikat, jeśli prowadzący jest już zalogowany.
+            </remarks>
+        </member>
+        <member name="T:VotingApp.WebForm1">
+            <summary>
+            Klasa strony logowania
+            </summary>
+        </member>
+        <member name="M:VotingApp.WebForm1.Page_Load(System.Object,System.EventArgs)">
+            <summary>
+            Funkcja wywoływana przy ładowaniu strony logowania
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+            <remarks>
+            <para>Funkcja sprawdza czy użytkownik jest już zalogowany. Dla zalogowanego zamiast pól do logowania jest wyświetlany komunikat.</para>
+            <para>Korzysta z metody ReadCookie</para>
+            </remarks>
+        </member>
+        <member name="M:VotingApp.WebForm1.LoginClick(System.Object,System.EventArgs)">
+            <summary>
+            Metoda wywoływana przez przycisk logowania.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+            <remarks>
+            <para>Sprawdza czy podany mail istnieje w bazie i jeśli tak, sprawdza czy hasło zgadza się z tym podanym przy rejestracji</para>
+            <para>W przypadku sukcesu przekierowuje na stronę główną oraz zapisuje w zmiennych sesyjnych informację o tym, że użytkownik jest zalogowany
+            oraz o jego roczniku, grupie, przedmiotach.</para>
+            </remarks>
+        </member>
+        <member name="M:VotingApp.WebForm1.EmailCheck(System.String)">
+            <summary>
+            Metoda do sprawdzania, czy podany mail istnieje już w bazie
+            </summary>
+            <param name="email"></param>
+            <returns>Wartość logiczną</returns>
+        </member>
+        <member name="M:VotingApp.WebForm1.PassCheck(System.String,System.String)">
+            <summary>
+            Metoda do sprawdzania, czy dla danego maila podane hasło jest prawidłowe
+            </summary>
+            <param name="email"></param>
+            <param name="pass"></param>
+            <returns>Wartość logiczną</returns>
+        </member>
+        <member name="M:VotingApp.WebForm1.Encrypt(System.String)">
+            <summary>
+            Metoda służąca do szyfrowania
+            </summary>
+            <param name="clearText"></param>
+            <returns>Zaszyfrowany ciąg znaków</returns>
+            <remarks>Służy do sprawdzania podanego hasła z zaszyfrowanym hasłem podanym przy rejestracji.</remarks>
+        </member>
+        <member name="M:VotingApp.WebForm1.SetCookie(System.String)">
+            <summary>
+            Ustawia po stronie użytkownika ciasteczko z nazwą użytkownika oraz kluczem szyfrującym po zalogowaniu.
+            </summary>
+            <param name="username"></param>
+            <remarks>Po udanym logowaniu zapisuje w ciasteczku zaszyfrowaną nazwę użytkownika oraz klucz prywatny algorytmu RSa do odszfyrowania tej
+            nazwy na innych podstronach aplikacji.</remarks>
+        </member>
+        <member name="M:VotingApp.WebForm1.ReadCookie">
+            <summary>
+            Odczytuje zaszyfrowaną nazwę użytkowika z ciasteczka.
+            </summary>
+            <returns>Zaszyfrowaną nazwę użytkownika lub 1, jeśli nie jest zalogowany</returns>
+        </member>
+        <member name="M:VotingApp.WebForm1.GetYear(System.String)">
+            <summary>
+            Pobiera rocznik na podstawie podanego maila
+            </summary>
+            <param name="email"></param>
+            <returns>Rocznik w formie liczby całkowitej</returns>
+        </member>
+        <member name="M:VotingApp.WebForm1.GetGroupID(System.String)">
+            <summary>
+            Pobiera grupę użytownika na podstawie podanego maila.
+            </summary>
+            <param name="email"></param>
+            <returns>ID grupy użytkownika</returns>
+        </member>
+        <member name="M:VotingApp.WebForm1.GetTeachers(System.String)">
+            <summary>
+            Pobiera prowadzących użytkownika na podstawie maila oraz zapisuje ich w zmiennych sesyjnych.
+            </summary>
+            <param name="email"></param>
+        </member>
+        <member name="F:VotingApp.WebForm1.FailureMessage">
+            <summary>
+            Kontrolka FailureMessage.
+            </summary>
+            <remarks>
+            Wyświetla komunikat błędu w przypadku błędy przy logowaniu.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.WebForm1.ErrorMessage">
+            <summary>
+            Kontrolka ErrorMessage.
+            </summary>
+            <remarks>
+            Wyświetla komunikat błędu w przypadku błędy przy logowaniu.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.WebForm1.FailureText">
+            <summary>
+            Kontrolka FailureText.
+            </summary>
+            <remarks>
+            Wyświetla komunikat błędu w przypadku błędy przy logowaniu.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.WebForm1.EmailLabel">
+            <summary>
+            Kontrolka EmailLabel.
+            </summary>
+            <remarks>
+            Etykieta do pola do wpisania adresu e-mail.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.WebForm1.EmailTxt">
+            <summary>
+            Kontrolka EmailTxt.
+            </summary>
+            <remarks>
+            Pole do wpisania adresu e-mail.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.WebForm1.EmailValidator">
+            <summary>
+            Kontrolka EmailValidator.
+            </summary>
+            <remarks>
+            Walidator zapewniający, że pole adresu e-mail nie jest puste przy logowaniu.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.WebForm1.PasswordLabel">
+            <summary>
+            Kontrolka PasswordLabel.
+            </summary>
+            <remarks>
+            Etykieta do pola do wpisania hasła.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.WebForm1.PasswordTxt">
+            <summary>
+            Kontrolka PasswordTxt.
+            </summary>
+            <remarks>
+            Pole do wpisania hasła.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.WebForm1.PassValidator">
+            <summary>
+            Kontrolka PassValidator.
+            </summary>
+            <remarks>
+            Walidator zapewniający, że pole hasła nie jest puste przy logowaniu.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.WebForm1.LoginButton">
+            <summary>
+            Kontrolka LoginButton.
+            </summary>
+            <remarks>
+            Przysik logowania. Uruchamia funkcję sprawdzającą, czy podane dane logowania są poprawne.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.WebForm1.LoggedInText">
+            <summary>
+            Kontrolka LoggedInText.
+            </summary>
+            <remarks>
+            Pole wyświetlające tekst o wyniku logowaniu lub o tym, że użytkownik jest już zalogowany, kiedy zalogowany użytkownik przejdzie na stronę logowania.
+            </remarks>
+        </member>
+        <member name="T:VotingApp.WebForm2">
+            <summary>
+            Klasa strony rejestracji.
+            </summary>
+        </member>
+        <member name="M:VotingApp.WebForm2.Page_Load(System.Object,System.EventArgs)">
+            <summary>
+            Metoda wywoływana przy załadowaniu strony rejestracji
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+            <remarks>Metoda sprawdza, czy użytkownik jest już zalogowany. Dla zalogowanego użytkownika zamiast pól rejestracji wyświetlany jest komunikat.</remarks>
+        </member>
+        <member name="M:VotingApp.WebForm2.RegisterClick(System.Object,System.EventArgs)">
+            <summary>
+            Metoda przycisku rejestracji.
+            </summary>
+            <param name="sender"></param>
+            <param name="e"></param>
+            <remarks>
+            <para>Metoda w kolejności sprawdza, czy podany mail jest w porpawnej domenie (student.up.krakow.pl), czy mail istnieje już w bazie, czy podane
+            hasło oraz powtórzone hasło są takie samo oraz czy hasła spełnia odpowiednie kryteria (metoda ValidatePassword)</para>
+            <para>W przypadku sukcesu zapisuje użytkownika oraz hasło w bazie Users oraz przekierowuje na stronę logowania.</para>
+            </remarks>
+        </member>
+        <member name="M:VotingApp.WebForm2.InsertRecord(System.String,System.String,System.String)">
+            <summary>
+            Metoda odpowiadając za wpisanie nowe użytkownika do tabeli Users.
+            </summary>
+            <param name="email"></param>
+            <param name="password"></param>
+            <param name="groupid"></param>
+            <remarks>W pierwszym kroku metoda pobiera na podstawie grupy oraz rocznika przedmioty, aby wpisać je następnie wraz z użytkownikiem i hasłem
+            w odpowiednie pola w tabeli.</remarks>
+        </member>
+        <member name="M:VotingApp.WebForm2.Encrypt(System.String)">
+            <summary>
+            Metoda służąca szyfrowaniu hasła
+            </summary>
+            <param name="clearText"></param>
+            <returns>Zaszyfrowany ciąg znaków</returns>
+        </member>
+        <member name="M:VotingApp.WebForm2.ValidatePassword(System.String)">
+            <summary>
+            Metoda sprawdzająca, czy hasło jest odpowiednio silne.
+            </summary>
+            <param name="password"></param>
+            <returns>Wartość logiczną</returns>
+            <remarks>Sprawdza w kolejności: czy hasło ma przynajmniej 8 znaków czy hasło zawiera min. 1 dużą literę, czy zawiera min. 1 cyfrę oraz 
+            min. 1 znak specjalny</remarks>
+        </member>
+        <member name="M:VotingApp.WebForm2.EmailCheck(System.String)">
+            <summary>
+            Metoda sprawdzająca czy podany mail istnieje już w bazie.
+            </summary>
+            <param name="email"></param>
+            <returns>Wartość logiczną</returns>
+        </member>
+        <member name="M:VotingApp.WebForm2.ReadCookie">
+            <summary>
+            Metoda odczytująca nazwę użytkownika z ciasteczka.
+            </summary>
+            <returns>Zaszyfrowaną nazwę użytkownika lub 1, jeśli nie jest zalogowany</returns>
+        </member>
+        <member name="F:VotingApp.WebForm2.ErrorMessage">
+            <summary>
+            Kontrolka ErrorMessage.
+            </summary>
+            <remarks>
+            Wyświetla błąd przy ieudanej rejestracji.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.WebForm2.EmailLabel">
+            <summary>
+            Kontrolka EmailLabel.
+            </summary>
+            <remarks>
+            Etykieta do pola do wpisania adresu e-mail.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.WebForm2.EmailTxt">
+            <summary>
+            Kontrolka EmailTxt.
+            </summary>
+            <remarks>
+            Pole do wpisania adresu e-mail.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.WebForm2.EmailValidator">
+            <summary>
+            Kontrolka EmailValidator.
+            </summary>
+            <remarks>
+            Walidator zapewniający, że pole do wpisania adresu e-mail nie jest puste.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.WebForm2.PasswordLabel">
+            <summary>
+            Kontrolka PasswordLabel.
+            </summary>
+            <remarks>
+            Etykieta do pola do wpisania hasła.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.WebForm2.PasswordTxt">
+            <summary>
+            Kontrolka PasswordTxt.
+            </summary>
+            <remarks>
+            Pole do wpisania hasła.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.WebForm2.PassValidator">
+            <summary>
+            Kontrolka PassValidator.
+            </summary>
+            <remarks>
+            Walidator zapewniający, że pole do wpisania hasła nie jest puste.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.WebForm2.ConfirmPasswordLabel">
+            <summary>
+            Kontrolka ConfirmPasswordLabel.
+            </summary>
+            <remarks>
+            Etykieta do pola do wpisania powtórzonego hasła.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.WebForm2.ConfirmPasswordTxt">
+            <summary>
+            Kontrolka ConfirmPasswordTxt.
+            </summary>
+            <remarks>
+            Pole do wpisania powtórzonego hasła.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.WebForm2.ConfPassValidator">
+            <summary>
+            Kontrolka ConfPassValidator.
+            </summary>
+            <remarks>
+            Walidator zapewniający, że pole do wpisania powtórzonego hasła nie jest puste.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.WebForm2.YearText">
+            <summary>
+            Kontrolka YearText.
+            </summary>
+            <remarks>
+            Etykieta do listy wyboru rocznika.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.WebForm2.Year">
+            <summary>
+            Kontrolka Year.
+            </summary>
+            <remarks>
+            Lista do wyboru rocznika.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.WebForm2.GroupText">
+            <summary>
+            Kontrolka GroupText.
+            </summary>
+            <remarks>
+            Etykieta do listy wyboru grupy.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.WebForm2.Group">
+            <summary>
+            Kontrolka Group.
+            </summary>
+            <remarks>
+            Lista do wyboru grupy.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.WebForm2.RegisterButton">
+            <summary>
+            Kontrolka RegisterButton.
+            </summary>
+            <remarks>
+            Przycisk rejestracji. Wywołuje metodę odpowiadającą za rejestrację użytkownika i ewentualne wpisanie go do bazy przy sukcesie.
+            </remarks>
+        </member>
+        <member name="F:VotingApp.WebForm2.LoggedInText">
+            <summary>
+            Kontrolka LoggedInText.
+            </summary>
+            <remarks>
+            Pole wyświetlające komunikat o tym, że użytkownik jest już zalogowany. Widoczne, jeśli zalogowany użytkownik przejdzie na stronę rejestracji.
+            </remarks>
+        </member>
+    </members>
+</doc>

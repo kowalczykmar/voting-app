@@ -13,47 +13,22 @@ using System.Data;
 
 namespace VotingApp
 {
+    /// <summary>
+    /// Klasa strony rejestracji.
+    /// </summary>
     public partial class WebForm2 : System.Web.UI.Page
     {
+        /// <summary>
+        /// Metoda wywoływana przy załadowaniu strony rejestracji
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <remarks>Metoda sprawdza, czy użytkownik jest już zalogowany. Dla zalogowanego użytkownika zamiast pól rejestracji wyświetlany jest komunikat.</remarks>
         protected void Page_Load(object sender, EventArgs e)
         {
-            string dbConnectionString = ConfigurationManager.ConnectionStrings["Baza DanychConnectionString"].ConnectionString;
-            SqlConnection con = new SqlConnection(dbConnectionString);
-            /*SqlCommand cmd = new SqlCommand("Select Distinct Year, Groups from Subjects", con);
-            con.Open();
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
-            DataTable dt = new DataTable();
-            da.Fill(dt);
-            Year.DataSource = dt;
-            Year.DataTextField = "Year";
-            Year.DataValueField = "Year";
-            Year.DataBind();
-            Group.DataSource = dt;
-            Group.DataTextField = "Groups";
-            Group.DataValueField = "Groups";
-            Group.DataBind();
-            SqlCommand cmd1 = new SqlCommand("Select Distinct Year from Subjects", con);
-            SqlCommand cmd2 = new SqlCommand("Select Distinct Groups from Subjects", con);
-            con.Open();
-            SqlDataAdapter da1 = new SqlDataAdapter(cmd1);
-            DataTable dt1 = new DataTable();
-            da1.Fill(dt1);
-            SqlDataAdapter da2 = new SqlDataAdapter(cmd2);
-            DataTable dt2 = new DataTable();
-            da2.Fill(dt2);
-            Year.DataSource = dt1;
-            Year.DataTextField = "Year";
-            Year.DataValueField = "Year";
-            Year.DataBind();
-            Group.DataSource = dt2;
-            Group.DataTextField = "Groups";
-            Group.DataValueField = "Groups";
-            Group.DataBind();*/
-
-             String user = ReadCookie();
-            if (user != "1")
+            String user = ReadCookie();
+            if (user != "1" && Session["LoggedIn"] != null)
             {
-
                 ErrorMessage.Visible = false;
                 EmailLabel.Visible = false;
                 EmailTxt.Visible = false;
@@ -65,7 +40,16 @@ namespace VotingApp
                 LoggedInText.Visible = true;
             }
         }
-
+        /// <summary>
+        /// Metoda przycisku rejestracji.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <remarks>
+        /// <para>Metoda w kolejności sprawdza, czy podany mail jest w porpawnej domenie (student.up.krakow.pl), czy mail istnieje już w bazie, czy podane
+        /// hasło oraz powtórzone hasło są takie samo oraz czy hasła spełnia odpowiednie kryteria (metoda ValidatePassword)</para>
+        /// <para>W przypadku sukcesu zapisuje użytkownika oraz hasło w bazie Users oraz przekierowuje na stronę logowania.</para>
+        /// </remarks>
         protected void RegisterClick(object sender, EventArgs e)
         {
             //walidacja email i hasla
@@ -76,7 +60,7 @@ namespace VotingApp
             String groupid = Group.SelectedValue.ToString();
             if (domain == "student.up.krakow.pl")
             {
-                email = email.Remove(email.IndexOf("@"));//, domain.Length + 1);
+                email = email.Remove(email.IndexOf("@"));
                 if (EmailCheck(email))
                 {
 
@@ -85,16 +69,6 @@ namespace VotingApp
                         if (ValidatePassword(pass))
                         {
                             InsertRecord(email, pass, groupid);
-                            /*
-                            ErrorMessage.Visible = false;
-                            EmailLabel.Visible = false;
-                            EmailTxt.Visible = false;
-                            PasswordLabel.Visible = false;
-                            PasswordTxt.Visible = false;
-                            ConfirmPasswordLabel.Visible = false;
-                            ConfirmPasswordTxt.Visible = false;
-                            RegisterButton.Visible = false;
-                            */
                             Response.Write("<script language='javascript'>window.alert('Rejestracja się powiodła, zaloguj się');window.location='LoginAccount.aspx';</script>");
                         }
                         else
@@ -117,7 +91,14 @@ namespace VotingApp
                 ErrorMessage.Text = "Adres e-mail nie pochodzi z domeny student.up.krakow.pl";
             }
         }
-
+        /// <summary>
+        /// Metoda odpowiadając za wpisanie nowe użytkownika do tabeli Users.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="password"></param>
+        /// <param name="groupid"></param>
+        /// <remarks>W pierwszym kroku metoda pobiera na podstawie grupy oraz rocznika przedmioty, aby wpisać je następnie wraz z użytkownikiem i hasłem
+        /// w odpowiednie pola w tabeli.</remarks>
         private void InsertRecord(string email, string password, string groupid)
         {
             string dbConnectionString = ConfigurationManager.ConnectionStrings["Baza DanychConnectionString"].ConnectionString;
@@ -139,7 +120,6 @@ namespace VotingApp
                 using (SqlCommand cmd = new SqlCommand(sql, connection))
                 {
                     //zapisanie loginu i zaszyfrowanego hasla w bazie
-                    //connection.Open();
                     cmd.Parameters.AddWithValue("@Email", email);
                     cmd.Parameters.AddWithValue("@Pass", Encrypt(password));
                     cmd.Parameters.AddWithValue("@Year", Year.SelectedItem.Value);
@@ -147,12 +127,15 @@ namespace VotingApp
                     cmd.Parameters.AddWithValue("@Subject1", s1);
                     cmd.Parameters.AddWithValue("@Subject2", s2);
                     cmd.Parameters.AddWithValue("@Subject3", s3);
-                    //cmd.Parameters.AddWithValue("@Teacher", Teacher.SelectedValue);
                     cmd.ExecuteNonQuery();
                 }
             }
         }
-
+        /// <summary>
+        /// Metoda służąca szyfrowaniu hasła
+        /// </summary>
+        /// <param name="clearText"></param>
+        /// <returns>Zaszyfrowany ciąg znaków</returns>
         private string Encrypt(string clearText)
         {
             string EncryptionKey = "MAKV2SPBNI99212";
@@ -175,28 +158,13 @@ namespace VotingApp
             return clearText;
         }
 
-        private string Decrypt(string cipherText)
-        {
-            string EncryptionKey = "MAKV2SPBNI99212";
-            byte[] cipherBytes = Convert.FromBase64String(cipherText);
-            using (Aes encryptor = Aes.Create())
-            {
-                Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(EncryptionKey, new byte[] { 0x49, 0x76, 0x61, 0x6e, 0x20, 0x4d, 0x65, 0x64, 0x76, 0x65, 0x64, 0x65, 0x76 });
-                encryptor.Key = pdb.GetBytes(32);
-                encryptor.IV = pdb.GetBytes(16);
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateDecryptor(), CryptoStreamMode.Write))
-                    {
-                        cs.Write(cipherBytes, 0, cipherBytes.Length);
-                        cs.Close();
-                    }
-                    cipherText = Encoding.Unicode.GetString(ms.ToArray());
-                }
-            }
-            return cipherText;
-        }
-
+        /// <summary>
+        /// Metoda sprawdzająca, czy hasło jest odpowiednio silne.
+        /// </summary>
+        /// <param name="password"></param>
+        /// <returns>Wartość logiczną</returns>
+        /// <remarks>Sprawdza w kolejności: czy hasło ma przynajmniej 8 znaków czy hasło zawiera min. 1 dużą literę, czy zawiera min. 1 cyfrę oraz 
+        /// min. 1 znak specjalny</remarks>
         private Boolean ValidatePassword(string password)
         {
             if (password.Length>=8){
@@ -227,7 +195,11 @@ namespace VotingApp
                 return false;
             }
         }
-
+        /// <summary>
+        /// Metoda sprawdzająca czy podany mail istnieje już w bazie.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns>Wartość logiczną</returns>
         private Boolean EmailCheck(string email)
         {
             Boolean check = true;
@@ -246,7 +218,10 @@ namespace VotingApp
             }
             return check;
         }
-
+        /// <summary>
+        /// Metoda odczytująca nazwę użytkownika z ciasteczka.
+        /// </summary>
+        /// <returns>Zaszyfrowaną nazwę użytkownika lub 1, jeśli nie jest zalogowany</returns>
         private String ReadCookie()
         {
             string User_name = "1";

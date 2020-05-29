@@ -10,6 +10,9 @@ using Microsoft.AspNet.Identity;
 
 namespace VotingApp
 {
+    /// <summary>
+    /// Klasa MasterPage, która odpowiada za część wspólnych funkcjonalności wszytskich stron, np. za odpowiednie wyświetlanie nagłówka.
+    /// </summary>
     public partial class SiteMaster : MasterPage
     {
         private const string AntiXsrfTokenKey = "__AntiXsrfToken";
@@ -66,7 +69,12 @@ namespace VotingApp
                 }
             }
         }
-
+        /// <summary>
+        /// Metoda wywoływana przy załadowaniu strony.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <remarks>Jeśli użytkownik jest już zalogowany, zmienia treść przycisku logowania na "Wyloguj się" oraz ukrywa przycisk rejestracji.</remarks>
         protected void Page_Load(object sender, EventArgs e)
         {
 
@@ -83,7 +91,10 @@ namespace VotingApp
         {
             Context.GetOwinContext().Authentication.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
         }
-
+        /// <summary>
+        /// Metoda odczytująca nazwę użytkownika z ciasteczka.
+        /// </summary>
+        /// <returns>Zaszyfrowaną nazwę użytkownika lub 1 dla niezalogowanego użytkownika</returns>
         private String ReadCookie()
         {
             string User_name = "1";
@@ -94,7 +105,16 @@ namespace VotingApp
             }
             return User_name;
         }
-
+        /// <summary>
+        /// Metoda przycisku logowania
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <remarks>
+        /// <para>Jeśli użytkownik jest zalogowany, służy wylogowaniu. Wtedy nadpisuje ciasteczko nowym, w którym nazwa użytkownika to 1</para>
+        /// <para>Dla niezalogowanego użytkownika kieruje na stronę logowania</para>
+        /// <para>Dla zalogowanego prowadzącego służy do wylogowania. Wtedy usuwa zmienną sesyjną przechowującą informację o zalogowanym prowadzącym.</para>
+        /// </remarks>
         protected void LoginClick(object sender, EventArgs e)
         {
             String user = ReadCookie();
@@ -117,7 +137,11 @@ namespace VotingApp
                 Response.Redirect("LoginAccount.aspx");
             }
         }
-
+        /// <summary>
+        /// Przycisk rejestracji, kieruje niezalogowanego użytkownika na stronę rejestracji.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected void RegisterClick(object sender, EventArgs e)
         {
             String user = ReadCookie();
@@ -126,7 +150,13 @@ namespace VotingApp
                 Response.Redirect("RegisterAccount.aspx");
             }
         }
-
+        /// <summary>
+        /// Metoda przycisku Panel dla prowadzących.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <remarks>Kieruje zalogowanego prowadzącego na stronę główną panelu dla prowadzących, gdzie wyświetlane są opinie o jego przediotach. 
+        /// Niezalogowanego użytkownika kieruje na stronę logowania dla prowadzących.</remarks>
         protected void TeacherClick(object sender, EventArgs e)
         {
             if (Session["TeacherLoggedIn"] != null)

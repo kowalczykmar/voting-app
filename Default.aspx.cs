@@ -13,13 +13,27 @@ using System.Data;
 
 namespace VotingApp
 {
+    /// <summary>
+    /// Strona główna aplikacji - służy do przesyłania opinii.
+    /// </summary>
     public partial class _Default : Page
     {
+        /// <summary>
+        /// Przy wywołaniu strony Default sprawdzamy, czy użytkownik jest zalogowany i w zależności od tego wyświetlamy funkcjonalności, bądź nie.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <remarks>
+        /// <para>Jeśli zalogowany jest prowadzący, strona przekierowuje na stronę główną panelu dla prowadzących</para>
+        /// <para>Jeśli użytkownik nie jest zalogowany (rozponanie następuje po zczytaniu nazwy użytkownika z ciasteczka oraz zmiennej sesyjnej), 
+        /// nie są wyświetlane żadne pola do przesyłania opinii, jedynie komentarz, aby się zalogował. Jeśli jest zalogowany, dostępne są pola 
+        /// do przesyłania opinii (komentarz słowny, pola jednokrotnego oraz wielokrotnego wyboru). Wyświetlane są jedynie te, dla których nie została 
+        /// przesłana jeszcze opinia. Jeśli opinia dla któregoś przedmiotu została już przesłana, wyświetlane jest jedynie pole do wpisania 
+        /// unikalnego kodu umożliwiającego sprawdzenie, czy opinia jest poprawnie zapisana w bazie.</para>
+        /// <para>korzysta z metod ReadCookie, GetSubjects, UserOpinionCheck</para>
+        /// </remarks>
         protected void Page_Load(object sender, EventArgs e)
         {
-            String text = File.ReadAllText(@"C:\Users\Jan Kremer\source\repos\test\test.txt");
-            //Teacher1.Text = Teacher1.Text + text;
-
             if (Session["TeacherLoggedIn"] != null)
             {
                 Response.Redirect("TeacherDefault.aspx");
@@ -32,8 +46,7 @@ namespace VotingApp
                 {
                     Subject1.Text = "Przedmiot: " + Session["Subject1"];
                     Subject1.Visible = true;
-                    //Teacher1.Text = "Prowadzący: " + Session["Teacher1"];
-                    Teacher1.Text = Teacher1.Text + text;
+                    Teacher1.Text = "Prowadzący: " + Session["Teacher1"];
                     Teacher1.Visible = true;
                     Opinion1.Visible = true;
                     NotLoggedIn1.Visible = false;
@@ -98,6 +111,13 @@ namespace VotingApp
             }
         }
 
+        /// <summary>
+        /// Funkcja służy odczytywaniu informacji z ciasteczka po stronie użytkownika
+        /// </summary>
+        /// <returns>Nazwę użytkownika</returns>
+        /// <remarks>
+        /// Zwraca 1, jeśli ciasteczko nie istnieje lub jeśli użytkownik nie jest zalogowany, lub zaszyfrowaną nazwę użytkownika, jeśli jest zalogowany.
+        /// </remarks>
         private String ReadCookie()
         {
             string User_name = "1";
@@ -110,6 +130,11 @@ namespace VotingApp
             return User_name;
         }
 
+        /// <summary>
+        /// Funkcja do odczytywania zaszyfrowanej nazwy użytkownika
+        /// </summary>
+        /// <returns>Odszyfrowaną nazwę użytkownika</returns>
+        /// <remarks>Jeśli ciasteczko nie istnieje, zwraca 1. Używa do odszyfrowania klucza prywatnego zapisanego w ciasteczku oraz algorytmu RSA</remarks>
         private String ReadUser()
         {
             var User_key = "1";
@@ -129,6 +154,17 @@ namespace VotingApp
             return User_key;
         }
 
+        /// <summary>
+        /// Wywołanie akcji w wyniku kliknięcia przyscisku przesłania opinii przedmiotu pierwszego
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <remarks>
+        /// <para>Wywołuje metodę InsertOpinion w celu wprowadzenia opinii do bazy.</para>
+        /// <para>Odpowiada za zniknięcie ze strony pól do przesyłania opinii oraz wyświetlenie pól z tekstem podziękowania oraz wyświetleniem 
+        /// unikalnego kodu do sprawdzenia czy opinia została poprawnie zapisana w bazie jak i wyświetlenie pola do wpisania kodu.</para>
+        /// <para>Wywołuje metody odpowiedzialne za przemiszanie tabel po dodaniu opinii.</para>
+        /// </remarks>
         protected void Submit1Click(object sender, EventArgs e)
         {
             string opinion = Opinion1.Text;
@@ -148,6 +184,17 @@ namespace VotingApp
             ShuffleUsersWithOpinionsTable();
         }
 
+        /// <summary>
+        /// Wywołanie akcji w wyniku kliknięcia przyscisku przesłania opinii przedmiotu drugiego
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <remarks>
+        /// <para>Wywołuje metodę InsertOpinion w celu wprowadzenia opinii do bazy.</para>
+        /// <para>Odpowiada za zniknięcie ze strony pól do przesyłania opinii oraz wyświetlenie pól z tekstem podziękowania oraz wyświetleniem 
+        /// unikalnego kodu do sprawdzenia czy opinia została poprawnie zapisana w bazie jak i wyświetlenie pola do wpisania kodu.</para>
+        /// <para>Wywołuje metody odpowiedzialne za przemiszanie tabel po dodaniu opinii.</para>
+        /// </remarks>
         protected void Submit2Click(object sender, EventArgs e)
         {
             string opinion = Opinion2.Text;
@@ -167,6 +214,17 @@ namespace VotingApp
             ShuffleUsersWithOpinionsTable();
         }
 
+        /// <summary>
+        /// Wywołanie akcji w wyniku kliknięcia przyscisku przesłania opinii przedmiotu trzeciego
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <remarks>
+        /// <para>Wywołuje metodę InsertOpinion w celu wprowadzenia opinii do bazy.</para>
+        /// <para>Odpowiada za zniknięcie ze strony pól do przesyłania opinii oraz wyświetlenie pól z tekstem podziękowania oraz wyświetleniem 
+        /// unikalnego kodu do sprawdzenia czy opinia została poprawnie zapisana w bazie jak i wyświetlenie pola do wpisania kodu.</para>
+        /// <para>Wywołuje metody odpowiedzialne za przemiszanie tabel po dodaniu opinii.</para>
+        /// </remarks>
         protected void Submit3Click(object sender, EventArgs e)
         {
             string opinion = Opinion3.Text;
@@ -186,6 +244,15 @@ namespace VotingApp
             ShuffleUsersWithOpinionsTable();
         }
 
+        /// <summary>
+        /// Przycisk do sprawdzenia czy opinia do przedmiotu pierwszego została poprawnie zapisana w bazie
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <remarks>
+        /// <para>Pobiera unikalny kod i sprawdza kody tworzone dla wszystkich opinii zapisanych w bazie.</para>
+        /// <para>W przypadku sukcesu pola do wpisywania kodu oraz przycisk nie są dłużej wyświetlane na stronie.</para>
+        /// </remarks>
         protected void CheckClick1(object sender, EventArgs e)
         {
             string code = Code1.Text.Trim();
@@ -196,7 +263,7 @@ namespace VotingApp
             SqlDataReader dr = cmd.ExecuteReader();
             while (dr.Read())
             {
-                if (code == OpinionCode(dr.GetString(0)))
+                if (code == OpinionCode(Decrypt(dr.GetString(0))))
                 {
                     NotLoggedIn1.Text = "Opinia jest poprawnie zapisana.";
                     Code1.Visible = false;
@@ -210,6 +277,15 @@ namespace VotingApp
             }
         }
 
+        /// <summary>
+        /// Przycisk do sprawdzenia czy opinia do przedmiotu drugiego została poprawnie zapisana w bazie
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <remarks>
+        /// <para>Pobiera unikalny kod i sprawdza kody tworzone dla wszystkich opinii zapisanych w bazie.</para>
+        /// <para>W przypadku sukcesu pola do wpisywania kodu oraz przycisk nie są dłużej wyświetlane na stronie.</para>
+        /// </remarks>
         protected void CheckClick2(object sender, EventArgs e)
         {
             string code = Code2.Text.Trim();
@@ -234,6 +310,15 @@ namespace VotingApp
             }
         }
 
+        /// <summary>
+        /// Przycisk do sprawdzenia czy opinia do przedmiotu trzeciego została poprawnie zapisana w bazie
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <remarks>
+        /// <para>Pobiera unikalny kod i sprawdza kody tworzone dla wszystkich opinii zapisanych w bazie.</para>
+        /// <para>W przypadku sukcesu pola do wpisywania kodu oraz przycisk nie są dłużej wyświetlane na stronie.</para>
+        /// </remarks>
         protected void CheckClick3(object sender, EventArgs e)
         {
             string code = Code3.Text.Trim();
@@ -258,29 +343,35 @@ namespace VotingApp
             }
         }
 
+        /// <summary>
+        /// Metoda służąca wprowadzaniu opinii do bazy
+        /// </summary>
+        /// <param name="opinion"></param>
+        /// <param name="nr"></param>
+        /// <remarks>
+        /// <para>Metoda ta pobiera tekst opinii oraz numer nr, czyli informację, do którego przedmiotu opinia ta się odnosi</para>
+        /// <para>Metoda zapisuje w tabeli z opiniami koemntarz słowny oraz zaznaczone opcje jednokrotnego i wielokrotnego wyboru w formie zaszyfrowanej wraz z 
+        /// informacją o roku, grupie, przedmiocie i prowadzącym zajęcia.</para>
+        /// <para>Metoda ta również zapisuje w tabeli użytkowników, którzy przesłali opinię nazwę użytkownika wraz z rokiem, grupą oraz przedmiotem 
+        /// i prowadzącym, którego opinia się tyczy.</para>
+        /// <para>Metoda ta korzysta z metod ReadUser oraz GetIndexesforOpinion</para>
+        /// </remarks>
         private void InsertOpinion(string opinion, int nr)
         {
+            String encodedOpinion = Encrypt(opinion);
+
             if (nr == 1)
             {
-                string dbConnectionString = ConfigurationManager.ConnectionStrings["Baza DanychConnectionString"].ConnectionString;
-                using (SqlConnection connection = new SqlConnection(dbConnectionString))
+                string dbConnectionString2 = ConfigurationManager.ConnectionStrings["Baza DanychConnectionString"].ConnectionString;
+                using (SqlConnection con = new SqlConnection(dbConnectionString2))
                 {
-                    /*
-                    string sql = "UPDATE Users SET IsOpinionSendSubject1 = 1 WHERE [Username] = @Email";
-                    using (SqlCommand cmd = new SqlCommand(sql, connection))
-                    {
-                        connection.Open();
-                        cmd.Parameters.AddWithValue("@Email", ReadUser());
-                        cmd.ExecuteNonQuery();
-                    }*/
-
                     string sql = "INSERT INTO Opinions(OpinionContent, OpinionNumber, OpinionIndexes, Year, GroupID, Subject, Teacher) VALUES (@Opinion, @OpNr, @OpIndex, @Year, @GroupID, @Subject, @Teacher)";
-                    using (SqlCommand cmd = new SqlCommand(sql, connection))
+                    using (SqlCommand cmd = new SqlCommand(sql, con))
                     {
-                        connection.Open();
-                        cmd.Parameters.AddWithValue("@Opinion", opinion);
-                        cmd.Parameters.AddWithValue("@OpNr", RadioButtonList1.SelectedValue);
-                        cmd.Parameters.AddWithValue("@OpIndex", GetIndexesforOpinion(1));
+                        con.Open();
+                        cmd.Parameters.AddWithValue("@Opinion", encodedOpinion);
+                        cmd.Parameters.AddWithValue("@OpNr", Encrypt(RadioButtonList1.SelectedValue));
+                        cmd.Parameters.AddWithValue("@OpIndex", Encrypt(GetIndexesforOpinion(1)));
                         cmd.Parameters.AddWithValue("@Year", Session["Year"]);
                         cmd.Parameters.AddWithValue("@GroupID", Session["GroupID"]);
                         cmd.Parameters.AddWithValue("@Subject", Session["Subject1"]);
@@ -289,7 +380,7 @@ namespace VotingApp
                     }
 
                     sql = "INSERT INTO UsersWithOpinionSend(Username, Year, GroupID, Subject, Teacher) VALUES (@User, @Year, @GroupID, @Subject, @Teacher)";
-                    using (SqlCommand cmd = new SqlCommand(sql, connection))
+                    using (SqlCommand cmd = new SqlCommand(sql, con))
                     {
                         cmd.Parameters.AddWithValue("@User", ReadUser());
                         cmd.Parameters.AddWithValue("@Year", Session["Year"]);
@@ -302,25 +393,16 @@ namespace VotingApp
             }
             else if (nr == 2)
             {
-                string dbConnectionString = ConfigurationManager.ConnectionStrings["Baza DanychConnectionString"].ConnectionString;
-                using (SqlConnection connection = new SqlConnection(dbConnectionString))
+                string dbConnectionString2 = ConfigurationManager.ConnectionStrings["Baza DanychConnectionString"].ConnectionString;
+                using (SqlConnection con = new SqlConnection(dbConnectionString2))
                 {
-                    /*
-                    string sql = "UPDATE Users SET IsOpinionSendSubject2 = 1 WHERE [Username] = @Email";
-                    using (SqlCommand cmd = new SqlCommand(sql, connection))
-                    {
-                        connection.Open();
-                        cmd.Parameters.AddWithValue("@Email", ReadUser());
-                        cmd.ExecuteNonQuery();
-                    }*/
-
                     string sql = "INSERT INTO Opinions(OpinionContent, OpinionNumber, OpinionIndexes, Year, GroupID, Subject, Teacher) VALUES (@Opinion, @OpNr, @OpIndex, @Year, @GroupID, @Subject, @Teacher)";
-                    using (SqlCommand cmd = new SqlCommand(sql, connection))
+                    using (SqlCommand cmd = new SqlCommand(sql, con))
                     {
-                        connection.Open();
-                        cmd.Parameters.AddWithValue("@Opinion", opinion);
-                        cmd.Parameters.AddWithValue("@OpNr", RadioButtonList2.SelectedValue);
-                        cmd.Parameters.AddWithValue("@OpIndex", GetIndexesforOpinion(2));
+                        con.Open();
+                        cmd.Parameters.AddWithValue("@Opinion", encodedOpinion);
+                        cmd.Parameters.AddWithValue("@OpNr", Encrypt(RadioButtonList2.SelectedValue));
+                        cmd.Parameters.AddWithValue("@OpIndex", Encrypt(GetIndexesforOpinion(2)));
                         cmd.Parameters.AddWithValue("@Year", Session["Year"]);
                         cmd.Parameters.AddWithValue("@GroupID", Session["GroupID"]);
                         cmd.Parameters.AddWithValue("@Subject", Session["Subject2"]);
@@ -329,7 +411,7 @@ namespace VotingApp
                     }
 
                     sql = "INSERT INTO UsersWithOpinionSend(Username, Year, GroupID, Subject, Teacher) VALUES (@User, @Year, @GroupID, @Subject, @Teacher)";
-                    using (SqlCommand cmd = new SqlCommand(sql, connection))
+                    using (SqlCommand cmd = new SqlCommand(sql, con))
                     {
                         cmd.Parameters.AddWithValue("@User", ReadUser());
                         cmd.Parameters.AddWithValue("@Year", Session["Year"]);
@@ -342,26 +424,16 @@ namespace VotingApp
             }
             else if (nr == 3)
             {
-                string dbConnectionString = ConfigurationManager.ConnectionStrings["Baza DanychConnectionString"].ConnectionString;
-                using (SqlConnection connection = new SqlConnection(dbConnectionString))
+                string dbConnectionString2 = ConfigurationManager.ConnectionStrings["Baza DanychConnectionString"].ConnectionString;
+                using (SqlConnection con = new SqlConnection(dbConnectionString2))
                 {
-                    /*
-                    string sql = "UPDATE Users SET IsOpinionSendSubject3 = 1 WHERE [Username] = @Email";
-                    using (SqlCommand cmd = new SqlCommand(sql, connection))
-                    {
-                        connection.Open();
-                        cmd.Parameters.AddWithValue("@Email", ReadUser());
-                        cmd.ExecuteNonQuery();
-                    }
-                    */
-
                     string sql = "INSERT INTO Opinions(OpinionContent, OpinionNumber, OpinionIndexes, Year, GroupID, Subject, Teacher) VALUES (@Opinion, @OpNr, @OpIndex, @Year, @GroupID, @Subject, @Teacher)";
-                    using (SqlCommand cmd = new SqlCommand(sql, connection))
+                    using (SqlCommand cmd = new SqlCommand(sql, con))
                     {
-                        connection.Open();
-                        cmd.Parameters.AddWithValue("@Opinion", opinion);
-                        cmd.Parameters.AddWithValue("@OpNr", RadioButtonList3.SelectedValue);
-                        cmd.Parameters.AddWithValue("@OpIndex", GetIndexesforOpinion(3));
+                        con.Open();
+                        cmd.Parameters.AddWithValue("@Opinion", encodedOpinion);
+                        cmd.Parameters.AddWithValue("@OpNr", Encrypt(RadioButtonList3.SelectedValue));
+                        cmd.Parameters.AddWithValue("@OpIndex", Encrypt(GetIndexesforOpinion(3)));
                         cmd.Parameters.AddWithValue("@Year", Session["Year"]);
                         cmd.Parameters.AddWithValue("@GroupID", Session["GroupID"]);
                         cmd.Parameters.AddWithValue("@Subject", Session["Subject3"]);
@@ -370,7 +442,7 @@ namespace VotingApp
                     }
 
                     sql = "INSERT INTO UsersWithOpinionSend(Username, Year, GroupID, Subject, Teacher) VALUES (@User, @Year, @GroupID, @Subject, @Teacher)";
-                    using (SqlCommand cmd = new SqlCommand(sql, connection))
+                    using (SqlCommand cmd = new SqlCommand(sql, con))
                     {
                         cmd.Parameters.AddWithValue("@User", ReadUser());
                         cmd.Parameters.AddWithValue("@Year", Session["Year"]);
@@ -383,6 +455,12 @@ namespace VotingApp
             }
         }
 
+        /// <summary>
+        /// Metoda sprawdzająca, czy dla danego przedmiotu opinia została już przesłana
+        /// </summary>
+        /// <param name="nr"></param>
+        /// <returns>Wartość logiczną</returns>
+        /// <remarks>Przekzywany metodzie numer nr decyduje o tym, który przedmiot jest sprawdzany pod kątem przesłania opinii.</remarks>
         private Boolean UserOpinionCheck(int nr)
         {
             Boolean check = false;
@@ -443,6 +521,12 @@ namespace VotingApp
             return check;
         }
 
+        /// <summary>
+        /// Metoda tworząca unikalny kod na podstawie przesłanej opinii i nazwy użytkownika i hashuje go
+        /// </summary>
+        /// <param name="opinion"></param>
+        /// <returns>Ciąg cyfrowo-znakowy</returns>
+        /// <remarks>Kod nie jest nigdzie zapisywany - użytkownik musi go przechować we własnym zakresie, jeśli chce z niego później skorzystać</remarks>
         private String OpinionCode(String opinion)
         {
             String code = "";
@@ -453,9 +537,19 @@ namespace VotingApp
                 count = opinion.Count(x => x == user[i]);
                 code = code + count.ToString();
             }
+            code = ComputeSha256Hash(code);           
             return code;
         }
 
+        /// <summary>
+        /// Metoda zczytuje zaznaczone opcje wielokrotnego wyboru
+        /// </summary>
+        /// <param name="nr"></param>
+        /// <returns>Indeksy w formie ciągu znaków</returns>
+        /// <remarks>
+        /// <para>Jeśli nie została zaznaczona żadna opcja, zwraca pusty ciąg.</para>
+        /// <para>Numer nr przekazywany metodzie decyduje o tym, opinie dla którego przedmiotu bierzemy pod uwagę.</para>
+        /// </remarks>
         private String GetIndexesforOpinion(int nr)
         {
             String indexes = "";
@@ -492,6 +586,9 @@ namespace VotingApp
             return indexes;
         }
 
+        /// <summary>
+        /// Metoda pobierająca przedmioty z tabeli z użytkownikami i zapisująca je w zmiennych sesyjnych.
+        /// </summary>
         private void GetSubjects()
         {
             string dbConnectionString = ConfigurationManager.ConnectionStrings["Baza DanychConnectionString"].ConnectionString;
@@ -512,6 +609,10 @@ namespace VotingApp
             Session["Subject3"] = s3;
         }
 
+        /// <summary>
+        /// Metoda zmieniająca losowo kolejność wpisów w tabeli z przesłanymi opiniami
+        /// </summary>
+        /// <remarks>Przemieszanie wpisów służy zaciemnianiu obrazu danych przed administratorem oraz prowadzącym.</remarks>
         private void ShuffleOpinionsTable()
         {
             string dbConnectionString = ConfigurationManager.ConnectionStrings["Baza DanychConnectionString"].ConnectionString;
@@ -545,6 +646,10 @@ namespace VotingApp
             }
         }
 
+        /// <summary>
+        /// Metoda zmieniająca losowo kolejność wpisów w tabeli z użytkownikami, którzy wysłali już opinię
+        /// </summary>
+        /// <remarks>Przemieszanie wpisów służy zaciemnianiu obrazu danych przed administratorem oraz prowadzącym.</remarks>
         private void ShuffleUsersWithOpinionsTable()
         {
             string dbConnectionString = ConfigurationManager.ConnectionStrings["Baza DanychConnectionString"].ConnectionString;
@@ -575,6 +680,93 @@ namespace VotingApp
                 cmd1.ExecuteNonQuery();
             }
         }
+
+        /// <summary>
+        /// Funkcja do szyfrowania opinii
+        /// </summary>
+        /// <param name="clearText"></param>
+        /// <returns>Zaszyfrowany tekst w formie tekstowej</returns>
+        /// <remarks>
+        /// Funkcja szyfruje tekst w oparciu o algorytm AES oraz klucz, który znajduje się w niedostępnym dla administratora pliku zewnętrznym.
+        /// </remarks>
+        private string Encrypt(string clearText)
+        {
+            string EncryptionKey = File.ReadAllText(@"C:\Users\Jan Kremer\source\repos\test\test.txt");
+            byte[] clearBytes = Encoding.Unicode.GetBytes(clearText);
+            using (Aes encryptor = Aes.Create())
+            {
+                Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(EncryptionKey, new byte[] { 0x49, 0x76, 0x61, 0x6e, 0x20, 0x4d, 0x65, 0x64, 0x76, 0x65, 0x64, 0x65, 0x76 });
+                encryptor.Key = pdb.GetBytes(32);
+                encryptor.IV = pdb.GetBytes(16);
+                using (System.IO.MemoryStream ms = new MemoryStream())
+                {
+                    using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateEncryptor(), CryptoStreamMode.Write))
+                    {
+                        cs.Write(clearBytes, 0, clearBytes.Length);
+                        cs.Close();
+                    }
+                    clearText = Convert.ToBase64String(ms.ToArray());
+                }
+            }
+            return clearText;
+        }
+
+        /// <summary>
+        /// Funkcja do odszyfrowywania.
+        /// </summary>
+        /// <param name="cipherText"></param>
+        /// <returns>Odszyfrowany tekst</returns>
+        /// <remarks>
+        /// Jest funkcją odwrotną do Encrypt, używamy jej, aby sprawdzić czy opinia o podanym unikalnym kodzie jest zapisana poprawnie w bazie.
+        /// </remarks>
+        private string Decrypt(string cipherText)
+        {
+            string EncryptionKey = File.ReadAllText(@"C:\Users\Jan Kremer\source\repos\test\test.txt");
+            byte[] cipherBytes = Convert.FromBase64String(cipherText);
+            using (Aes encryptor = Aes.Create())
+            {
+                Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(EncryptionKey, new byte[] { 0x49, 0x76, 0x61, 0x6e, 0x20, 0x4d, 0x65, 0x64, 0x76, 0x65, 0x64, 0x65, 0x76 });
+                encryptor.Key = pdb.GetBytes(32);
+                encryptor.IV = pdb.GetBytes(16);
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateDecryptor(), CryptoStreamMode.Write))
+                    {
+                        cs.Write(cipherBytes, 0, cipherBytes.Length);
+                        cs.Close();
+                    }
+                    cipherText = Encoding.Unicode.GetString(ms.ToArray());
+                }
+            }
+            return cipherText;
+        }
+
+        /// <summary>
+        /// Funkcja hashująca
+        /// </summary>
+        /// <param name="rawData"></param>
+        /// <returns>Skrót wporwadzonego tekstu</returns>
+        /// <remarks>
+        /// Służy do tworzenia skrótu unikalnego kodu po przesłaniu opinii.
+        /// </remarks>
+        private string ComputeSha256Hash(string rawData)
+        {
+            // Create a SHA256   
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                // ComputeHash - returns byte array  
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
+
+                // Convert byte array to a string   
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    builder.Append(bytes[i].ToString("x2"));
+                }
+                return builder.ToString().Substring(0,10);
+            }
+        }
+
     }
 }
  
