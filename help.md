@@ -1,5 +1,9 @@
 # VotingApp
 
+---
+title: Dokumentacja projektu VotingApp
+---
+
 <table>
 <tbody>
 <tr>
