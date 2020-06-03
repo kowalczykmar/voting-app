@@ -1,5 +1,3 @@
-title:VotingApp Dokumentacja
-
 # VotingApp
 
 <table>
