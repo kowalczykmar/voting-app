@@ -1,4 +1,4 @@
-# VotingApp
+# VotingApp Dokumentacja
 
 <table>
 <tbody>
