@@ -4,7 +4,7 @@
 [Film prezentacyjny](https://www.youtube.com/watch?v=EOBhkRp8EdM&feature=youtu.be&fbclid=IwAR136ZcahdLxRphxvOG2jxAN1E2-4WeVj3hnz3T_G3qVSpS5eRtivdGZgsg)
 
 # Dokumentacja 
-[Dokumentacja](help.md) </br>
+[Dokumentacja](https://kowalczykmar.github.io/voting-app/)
 
 # Repozytorium 
 [Repozytorium z plikami](https://github.com/kowalczykmar/voting-app)
