@@ -1,8 +1,8 @@
-# VotingApp
-
 ---
 title: Dokumentacja projektu VotingApp
 ---
+
+# VotingApp
 
 <table>
 <tbody>
